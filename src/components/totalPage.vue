@@ -31,6 +31,9 @@
                     <Option v-for="item in engeryTypeList" :value="item.value" :key="item.value"></Option>
                 </Select>
             </Col>
+          <Col span="2">
+            <Button>查询</Button>
+          </Col>
             <Col span="4">
                 <Button>下载</Button>
                 <Button>打印</Button>
@@ -47,6 +50,7 @@
 </template>
 <script>
 import axios from 'axios'
+import qs from 'qs'
     export default {
         data () {
             return {
@@ -144,20 +148,16 @@ import axios from 'axios'
         },
         methods:{
             getData(){
-                this.$axios.post("https://wx.persagy.com/EMS_Finein_WX/Spring/MVC/entrance/unifier/FNCentreBuildingListService",{
-                    data:{
-                        "jsonString":'{}'
-                    }
-                }).then((res)=>{
+                this.$axios.post("/api/FNCentreBuildingListService",qs.stringify( {"jsonString":'{}'})).then((res)=>{
                     console.log(res);
-
+                }).catch((ex)=>{
+                  console.log(ex)
                 })
             }
         },
         mounted () {
             this.getData();
         }
-
     }
 </script>
 <style scoped>

@@ -17,6 +17,7 @@
 </template>
 <script>
 import axios from 'axios'
+import qs from 'qs'
 import {setCookie} from '../../static/js/cookie'
     export default {
         data () {
@@ -35,21 +36,21 @@ import {setCookie} from '../../static/js/cookie'
                 }else if(this.password == ''){
                     this.returntext = "密码不能为空"
                 }else{
-                    // axios.post("http://192.168.100.81:3000/login",{
-                    //     data:{name:this.username,password:this.password}
-                    // }).then((res)=>res.data).then((res)=>{
-                    //     console.log(res);
-                    //     this.returntext = res.error;
-                    //     if (!res.code) {
-                    //         this.$store.state.username = res.oldUser.name;
-                    //         // console.log(this.$store.state);
-                    //         setCookie('admin',222222);
-                    //         this.$Message.success('欢迎回来');
-                    //         this.$router.push("/totalPage");
-                    //     }else{
-                    //         this.$Message.warning('登录失败');
-                    //     }
-                    // })
+                    axios.post("api/login",qs.stringify({
+                        data:{name:this.username,password:this.password}
+                    })).then((res)=>res.data).then((res)=>{
+                        console.log(res);
+                        this.returntext = res.error;
+                        if (!res.code) {
+                            this.$store.state.username = res.oldUser.name;
+                            // console.log(this.$store.state);
+                            setCookie('admin',222222);
+                            this.$Message.success('欢迎回来');
+                            this.$router.push("/totalPage");
+                        }else{
+                            this.$Message.warning('登录失败');
+                        }
+                    })
                     setCookie('admin',222222);
                     this.$Message.success('欢迎回来');
                     this.$router.push("/totalPage");
