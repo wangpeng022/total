@@ -135,13 +135,17 @@
         // this.$refs.table.$el.getElementsByClassName('ivu-table-body')[0].style.height='auto';
         let inner=this.$refs.table.$el.innerHTML
         let link='https://unpkg.com/iview@2.14.3/dist/styles/iview.css'
-        let htmlText = `<!DOCTYPE html><html><head><meta charset="UTF-8"><link href="${link}" rel="stylesheet"></head><body><div class="ivu-table-wrapper">${inner}</div></body></html>`;
+        let htmlText = `<!DOCTYPE html><html><head><meta charset="UTF-8"><link href="${link}" rel="stylesheet"><style type="text/css">.ivu-table-header table,.ivu-table-body table{width:100%!important;}.ivu-table-overflowY{overflow:hidden!important;}.ivu-table-wrapper{border:1px solid #dddee1!important}</style></head><body><div class="ivu-table-wrapper">${inner}</div></body></html>`;
 
         const f=document.getElementById('printf')
         f.contentDocument.write(htmlText);
+        console.log(window.frames['printf'].document.getElementsByClassName('ivu-table-body')[0].style.height);
+
         window.frames['printf'].document.getElementsByClassName('ivu-table-body')[0].style.height='auto';
         f.contentDocument.close();
+        setTimeout(() => {
         f.contentWindow.print();
+        }, 1000);
       },
       downLoad() {
         const param = this.getQuery(1);
