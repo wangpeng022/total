@@ -18,6 +18,14 @@ module.exports = {
         pathRewrite: {
           '^/api': ''
         }
+      },
+      '/down': {
+        target: 'https://wx.persagy.com/EMS_Finein_WX/Spring/MVC/entrance/', // 数据接口
+        changeOrigin: true, // 跨域
+        secure: false,
+        pathRewrite: {
+          '^/down': ''
+        }
       }
     },
 

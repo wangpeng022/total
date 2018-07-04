@@ -5,12 +5,13 @@
   "author": "",
   "private": true,
   "scripts": {
-    "dev": "webpack-dev-server --inline --progress --host 120.0.0.1 --config build/webpack.dev.conf.js",
+    "dev": "webpack-dev-server --inline --progress --host 192.168.100.222 --config build/webpack.dev.conf.js",
     "start": "npm run dev",
     "build": "node build/build.js"
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "dayjs": "^1.7.2",
     "express": "^4.16.3",
     "iview": "^2.14.3",
     "qs": "^6.5.2",

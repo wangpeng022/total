@@ -37,8 +37,11 @@ import {setCookie} from '../../static/js/cookie'
                     this.returntext = "密码不能为空"
                 }else{
                     axios.post("api/login",qs.stringify({
-                        data:{name:this.username,password:this.password}
-                    })).then((res)=>res.data).then((res)=>{
+                        data:{userId:this.username,password:this.password}
+                    })).then((res)=>{
+                      console.log(res)
+                    }).then((res)=>{
+                      return;
                         console.log(res);
                         this.returntext = res.error;
                         if (!res.code) {
