@@ -6,27 +6,18 @@ const path = require('path')
 
 module.exports = {
   dev: {
-
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
       '/api': {
-        target: 'https://wx.persagy.com/EMS_Finein_WX/Spring/MVC/entrance/unifier/', // 数据接口
+        target: 'https://wx.persagy.com/EMS_Finein_WX/Spring/MVC/entrance/', // 数据接口
         changeOrigin: true, // 跨域
         secure: false,
         pathRewrite: {
           '^/api': ''
         }
       },
-      '/down': {
-        target: 'https://wx.persagy.com/EMS_Finein_WX/Spring/MVC/entrance/', // 数据接口
-        changeOrigin: true, // 跨域
-        secure: false,
-        pathRewrite: {
-          '^/down': ''
-        }
-      }
     },
 
     // Various Dev Server settings
@@ -60,7 +51,7 @@ module.exports = {
     // Paths
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',
-    assetsPublicPath: '/',
+    assetsPublicPath: './',
 
     /**
      * Source Maps

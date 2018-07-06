@@ -42,7 +42,7 @@
       </Col>
     </Row>
     <br/>
-    <Row>
+    <Row ref="total">
       <Col span="2">
       汇总：</Col>
       <Col span="4" v-text="sumMoney+'元'"></Col>
@@ -55,7 +55,16 @@
   import axios from 'axios'
   import qs from 'qs'
   import dayjs from 'dayjs'
-
+  import publicu from '../api.js'
+  const  remove_ie_header_and_footer=()=> {
+    var hkey_root, hkey_path, hkey_key;
+    hkey_path = "HKEY_CURRENT_USER\\Software\\Microsoft\\Internet Explorer\\PageSetup\\";
+    try {
+      var RegWsh = new ActiveXObject("WScript.Shell");
+      RegWsh.RegWrite(hkey_path + "header", "");
+      RegWsh.RegWrite(hkey_path + "footer", "");
+    } catch (e) {}
+  }
   export default {
     data() {
       return {
@@ -130,21 +139,24 @@
       }
     },
     methods: {
-      printSome(){
-        // this.$refs.table.$el.style.height='auto';
-        // this.$refs.table.$el.getElementsByClassName('ivu-table-body')[0].style.height='auto';
-        let inner=this.$refs.table.$el.innerHTML
-        let link='https://unpkg.com/iview@2.14.3/dist/styles/iview.css'
-        let htmlText = `<!DOCTYPE html><html><head><meta charset="UTF-8"><link href="${link}" rel="stylesheet"><style type="text/css">.ivu-table-header table,.ivu-table-body table{width:100%!important;}.ivu-table-overflowY{overflow:hidden!important;}.ivu-table-wrapper{border:1px solid #dddee1!important}</style></head><body><div class="ivu-table-wrapper">${inner}</div></body></html>`;
-
-        const f=document.getElementById('printf')
+      printSome() {
+        if (!!window.ActiveXObject || "ActiveXObject" in window) {
+          remove_ie_header_and_footer();
+        }
+        let inner = this.$refs.table.$el.innerHTML
+        let link = 'https://unpkg.com/iview@2.14.3/dist/styles/iview.css'
+        let totalText=`<div style="margin: 10px 0 0 10px" data-v-6c37fe9a="" class="ivu-row">${this.$refs.total.$el.innerHTML}</div>`
+        let htmlText = `<!DOCTYPE html><html><head><meta charset="UTF-8"><link href="${link}" rel="stylesheet"><style type="text/css">.ivu-table-header table,.ivu-table-body table{width:100%!important;}.ivu-table-overflowY{overflow:hidden!important;}.ivu-table-wrapper{border:1px solid #dddee1!important}</style></head><body>${totalText}<div class="ivu-table-wrapper" style="width: 1096px;">${inner}</div></body></html>`;
+        const f = document.getElementById('printf')
+        f.contentDocument.write('');
         f.contentDocument.write(htmlText);
-        console.log(window.frames['printf'].document.getElementsByClassName('ivu-table-body')[0].style.height);
-
-        window.frames['printf'].document.getElementsByClassName('ivu-table-body')[0].style.height='auto';
+        window.frames['printf'].document.getElementsByClassName('ivu-table-body')[0].style.height = 'auto';
+        // window.frames['printf'].document.getElementsByTagName('table')[0].style.width = '1096px';
+        // window.frames['printf'].document.getElementsByTagName('table')[1].style.width = '1096px';
+        console.log(window.frames['printf'].document.getElementsByTagName('table'))
         f.contentDocument.close();
         setTimeout(() => {
-        f.contentWindow.print();
+          f.contentWindow.print();
         }, 1000);
       },
       downLoad() {
@@ -187,13 +199,13 @@
           buildingId,
           energyTypeId,
           timeFrom: dayjs(this.timeList[0]).format('YYYY-MM-DD HH:mm:ss'),
-          timeTo: dayjs(this.timeList[1]).format('YYYY-MM-DD HH:mm:ss'),
+          timeTo: dayjs(this.timeList[1]).add(1, 'day').format('YYYY-MM-DD HH:mm:ss'),
           isDownload: isDownload
         };
         return param;
       },
       getData() {
-        this.$axios.post("/api/FNCentreBuildingListService", qs.stringify({"jsonString": '{}'})).then((res) => {
+        this.$axios.post(publicu+"unifier/FNCentreBuildingListService", qs.stringify({"jsonString": '{}'})).then((res) => {
           if (res.data && res.data.content) {
             this.projectList = res.data.content;
           }
@@ -202,17 +214,17 @@
         })
       },
       getList(param) {
-        return this.$axios.post("/api/FNCentreGridService", qs.stringify({"jsonString": JSON.stringify(param)}))
+        return this.$axios.post(publicu+"unifier/FNCentreGridService", qs.stringify({"jsonString": JSON.stringify(param)}))
       },
-      downFile(param = "2bee9cd6-93f2-4b37-a8b4-10102c5a1a9e") {
+      downFile(param) {
         this.$axios({
           method: 'post',
-          url: '/down/download',
+          url: publicu+'download',
           data: qs.stringify({"resource": param}),
           responseType: 'blob'
         }).then((res) => {
-          const filename=decodeURI(res.headers['content-disposition'].split(';').filter((item)=>item.indexOf('filename')>0)[0].split('=')[1].replace(/\"/g,''));
-          const blob = new Blob([res.data], { type: "application/vnd.ms-excel" })
+          const filename = decodeURI(res.headers['content-disposition'].split(';').filter((item) => item.indexOf('filename') > 0)[0].split('=')[1].replace(/\"/g, ''));
+          const blob = new Blob([res.data], {type: "application/vnd.ms-excel"})
           if ('download' in document.createElement('a')) { // 非IE下载
             const elink = document.createElement('a')
             elink.download = filename
