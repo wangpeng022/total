@@ -1,11 +1,12 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import login from '@/components/login'
-import totalPage from '@/components/totalPage'
+const login = ()=>import('@/components/login')
+const totalPage = ()=> import('@/components/totalPage')
 // import {getCookie} from '../../static/js/cookie'
 import store from '../store'
 const getCookie=(c_name)=>{
   if (document.cookie.length>0){
+
     let c_start=document.cookie.indexOf(c_name + "=")
     if (c_start!=-1){
       c_start=c_start + c_name.length+1

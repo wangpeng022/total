@@ -3,7 +3,7 @@
     <div class="middle">
       <Input v-model="username" icon="ios-personadd" size="large" placeholder="admin" clearable style="width: 300px;textAlign:center" autofocus @on-focus="back2empy"></Input>
       <br/>
-      <Input v-model="password" icon="ios-locked-outline" size="large" placeholder="admin" clearable style="width: 300px;textAlign:center;margin:10px 0" @on-enter="login" @on-focus="back2empy"></Input>
+      <Input v-model="password" icon="ios-locked-outline" size="large" placeholder="password" clearable style="width: 300px;textAlign:center;margin:10px 0" @on-enter="login" @on-focus="back2empy"></Input>
       <br/>
       <Button type="success" style="width:300px;marginBottom:10px" @click.native="login">登录</Button>
       <br/>
@@ -20,7 +20,6 @@
     var date=new Date()
     date.setSeconds(date.getSeconds()+expire)
     document.cookie=c_name+ "="+escape(value)+"; expires="+date.toGMTString()
-    // console.log(document.cookie)
   }
   export default {
     data () {
@@ -40,7 +39,6 @@
           this.returntext = "密码不能为空"
         }else{
           axios.post(publicu+"unifier/FNCentreLoginService",qs.stringify({"jsonString": JSON.stringify({userId:this.username,password:this.password})})) .then((res)=>{
-            console.log(res)
             if(res.data.content[0]&&res.data.content[0].result){
               this.$store.commit('setUserid',this.username,res.data.content[0].random)
               window.localStorage.setItem('userId',this.username)

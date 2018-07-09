@@ -49,6 +49,7 @@
     </Row>
     <br/>
     <Table ref="table" :height="tabHeight" :columns="columns1" :data="data1"></Table>
+    <Table :style="style1" ref="tablePrint" width="1096" :height="tabHeight" :columns="columns1" :data="data1"></Table>
   </div>
 </template>
 <script>
@@ -56,15 +57,7 @@
   import qs from 'qs'
   import dayjs from 'dayjs'
   import publicu from '../api.js'
-  const  remove_ie_header_and_footer=()=> {
-    var hkey_root, hkey_path, hkey_key;
-    hkey_path = "HKEY_CURRENT_USER\\Software\\Microsoft\\Internet Explorer\\PageSetup\\";
-    try {
-      var RegWsh = new ActiveXObject("WScript.Shell");
-      RegWsh.RegWrite(hkey_path + "header", "");
-      RegWsh.RegWrite(hkey_path + "footer", "");
-    } catch (e) {}
-  }
+
   export default {
     data() {
       return {
@@ -74,8 +67,8 @@
             key: 'buildingName'
           },
           {
-            title: '微信帐号',
-            key: 'WXId'
+            title: '账单编号',
+            key: 'orderId'
           },
           {
             title: '租户全码',
@@ -106,7 +99,7 @@
             key: 'wxPayTime'
           },
           {
-            title: '系统更新状态时间',
+            title: '更新状态时间',
             key: 'systemStatusTime'
           },
         ],
@@ -134,26 +127,22 @@
           }
         ],
         tabHeight: 500,
+        style1:{
+          'display':'none'
+        },
         timeList: [],
         fileID: ''
       }
     },
     methods: {
       printSome() {
-        if (!!window.ActiveXObject || "ActiveXObject" in window) {
-          remove_ie_header_and_footer();
-        }
-        let inner = this.$refs.table.$el.innerHTML
+        let inner = this.$refs.tablePrint.$el.innerHTML
         let link = 'https://unpkg.com/iview@2.14.3/dist/styles/iview.css'
         let totalText=`<div style="margin: 10px 0 0 10px" data-v-6c37fe9a="" class="ivu-row">${this.$refs.total.$el.innerHTML}</div>`
-        let htmlText = `<!DOCTYPE html><html><head><meta charset="UTF-8"><link href="${link}" rel="stylesheet"><style type="text/css">.ivu-table-header table,.ivu-table-body table{width:100%!important;}.ivu-table-overflowY{overflow:hidden!important;}.ivu-table-wrapper{border:1px solid #dddee1!important}</style></head><body>${totalText}<div class="ivu-table-wrapper" style="width: 1096px;">${inner}</div></body></html>`;
+        let htmlText = `<!DOCTYPE html><html><head><meta charset="UTF-8"><link href="${link}" rel="stylesheet"><style type="text/css">.ivu-table-header table,.ivu-table-body table{width:100%!important;}.ivu-table-overflowY{overflow:hidden!important;}.ivu-table-wrapper{border:1px solid #dddee1!important}</style></head><body style="width: 1096px;">${totalText}<div class="ivu-table-wrapper">${inner}</div></body></html>`;
         const f = document.getElementById('printf')
-        f.contentDocument.write('');
         f.contentDocument.write(htmlText);
         window.frames['printf'].document.getElementsByClassName('ivu-table-body')[0].style.height = 'auto';
-        // window.frames['printf'].document.getElementsByTagName('table')[0].style.width = '1096px';
-        // window.frames['printf'].document.getElementsByTagName('table')[1].style.width = '1096px';
-        console.log(window.frames['printf'].document.getElementsByTagName('table'))
         f.contentDocument.close();
         setTimeout(() => {
           f.contentWindow.print();
