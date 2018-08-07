@@ -29,7 +29,7 @@
       </Col>
 
       <Col span="4">
-      <Select v-model="engeryType" style="width: 150px" placeholder="请选择能源类型">
+      <Select v-model="engeryType" style="width: 150px" placeholder="电">
         <Option v-for="item in engeryTypeList" :value="item.name" :key="item.value"></Option>
       </Select>
       </Col>
@@ -43,13 +43,14 @@
     </Row>
     <br/>
     <Row ref="total">
-      <Col span="2">
-      汇总：</Col>
+      <Col span="2">汇总：</Col>
       <Col span="4" v-text="sumMoney+'元'"></Col>
     </Row>
     <br/>
-    <Table ref="table" :height="tabHeight" :columns="columns1" :data="data1"></Table>
-    <Table :style="style1" ref="tablePrint" width="1096" :height="tabHeight" :columns="columns1" :data="data1"></Table>
+
+
+    <!--<Table ref="table" :height="tabHeight" :columns="columns1" :data="data1"></Table>-->
+    <!--<Table :style="style1" ref="tablePrint" width="1096" :height="tabHeight" :columns="columns1" :data="data1"></Table>-->
   </div>
 </template>
 <script>
@@ -105,7 +106,7 @@
         ],
         data1: [],
         projectName: '',
-        engeryType: '',
+        engeryType: '电',
         sumMoney: 0,
         projectList: [],
         engeryTypeList: [
@@ -131,10 +132,25 @@
           'display':'none'
         },
         timeList: [],
-        fileID: ''
+        fileID: '',
+
+      }
+    },
+    watch:{
+      name1(newVal , oldVal){
+        console.log(newVal,oldVal)
       }
     },
     methods: {
+      selected(a,b,c){
+        console.log(a,b,c)
+      },
+      todetail(){
+        this.$router.push({ path: 'detail', query: { userId: 123 }})
+      },
+      inputhandle(e){
+        this.from.a=e.target.value;
+      },
       printSome() {
         let inner = this.$refs.tablePrint.$el.innerHTML
         let link = 'https://unpkg.com/iview@2.14.3/dist/styles/iview.css'
@@ -233,7 +249,7 @@
     },
     mounted() {
       this.getData();
-      this.tabHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 20
+
     }
   }
 </script>
@@ -251,4 +267,5 @@
     display: inline-block;
     float: right;;
   }
+
 </style>

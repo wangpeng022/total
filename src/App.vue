@@ -16,6 +16,7 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   width: 100%;
+  height:100%;
 }
 * {
     margin: 0;
@@ -24,7 +25,8 @@ export default {
 body{
     /* user-select: none; */
     width: 100%;
-    height: 100%;
+    height: 100vh;
+    overflow: hidden;
     font-size: 14px;
 }
 

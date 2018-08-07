@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-const login = ()=>import('@/components/login')
-const totalPage = ()=> import('@/components/totalPage')
-// import {getCookie} from '../../static/js/cookie'
+import login from '@/components/login'
+import totalPage from '@/components/totalPage'
+import tabs from '@/components/tabs'
 import store from '../store'
 const getCookie=(c_name)=>{
   if (document.cookie.length>0){
@@ -22,16 +22,8 @@ export default new Router({
   routes: [
     {
       path: '/totalPage',
-      name: 'totalPage',
-      component: totalPage,
-      beforeEnter: (to, from, next) => {
-        const _userid=store.state.userID||window.localStorage.getItem('userId');
-        if (!getCookie(_userid)) {
-          next("login");
-        } else {
-          next()
-        }
-      }
+      name:'totalPage',
+      component: tabs,
     },
     {
       path: '/login',

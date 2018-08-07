@@ -9,12 +9,20 @@
       <br/>
       <span style="color:red">{{returntext}}</span>
     </div>
+    <br><br><br>
+    <form action="" @submit="submit">
+      <input type="text" v-model="message">
+      <h4>{{ this.$store.state.obj.message}}</h4>
+      <input type="submit"  value="提交">
+    </form>
   </div>
 </template>
 <script>
   import axios from 'axios'
   import qs from 'qs'
   import publicu from '../api.js'
+  // import store from '../store'
+  import {mapMutations} from 'vuex'
   // import {setCookie} from '../../static/js/cookie'
   const setCookie=(c_name,value,expire)=>{
     var date=new Date()
@@ -22,6 +30,20 @@
     document.cookie=c_name+ "="+escape(value)+"; expires="+date.toGMTString()
   }
   export default {
+    mounted(){
+    console.log(this.$store.state.obj.message)
+
+    },
+    computed:{
+      message:{
+        get(){
+          return this.$store.state.obj.message
+        },
+        set(value){
+          this.updateMessage(value)
+        }
+      }
+    },
     data () {
       return {
         flag : false,
@@ -29,9 +51,18 @@
         password:'',
         returntext:'',
         err:'',
+        form:{
+          a:1,b:2
+        }
       }
     },
     methods:{
+
+      submit(e){
+        e.preventDefault();
+        this.form={}
+      },
+
       login(){
         if (this.username == '') {
           this.returntext = "账号不能为空"
@@ -56,10 +87,7 @@
       back2empy(){
         this.returntext=''
       },
-    },
-    mounted(){
-
-
+      ...mapMutations(['updateMessage'])
     }
   }
 </script>
