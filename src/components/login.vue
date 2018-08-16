@@ -69,7 +69,7 @@
         }else if(this.password == ''){
           this.returntext = "密码不能为空"
         }else{
-          axios.post(publicu+"unifier/FNCentreLoginService",qs.stringify({"jsonString": JSON.stringify({userId:this.username,password:this.password})})) .then((res)=>{
+          axios.post(publicu+"unifier/FNCenterLoginService",qs.stringify({"jsonString": JSON.stringify({userId:this.username,password:this.password})})) .then((res)=>{
             if(res.data.content[0]&&res.data.content[0].result){
               this.$store.commit('setUserid',this.username,res.data.content[0].random)
               window.localStorage.setItem('userId',this.username)
