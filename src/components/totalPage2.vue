@@ -71,10 +71,6 @@ export default {
   data() {
     return {
       columns1: [
-        {
-          title: "分公司id",
-          key: "branchCompanyId"
-        },
          {
           title: "分公司名称",
           key: "branchCompanyName"
@@ -271,7 +267,7 @@ export default {
       this.$axios({
         responseType: 'arraybuffer',
         method: "post",
-        url: publicu + "unifier/FNCenterRecordCostService",
+        url: publicu + "unifier/FNCenterRecordReturnGridService",
         data: qs.stringify({ jsonString: JSON.stringify(param) }),
         responseType: "blob"
       })

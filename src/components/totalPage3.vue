@@ -54,10 +54,10 @@
     <br/>
     <Row ref="total">
       <Col span="2">汇总：</Col>
-      <Col span="4" v-text="sumMoney+'元'"></Col>
+      <Col span="4" v-text="amountCost+'元'"></Col>
     </Row>
     <br/>
-    <Table stripe  ref="table" :height="tabHeight" :columns="columns1" :data="data1"></Table>
+    <Table  ref="table" :height="tabHeight" :columns="columns1" :row-class-name="rowClassName" :data="data1"></Table>
     <Table :style="style1" ref="tablePrint" width="1096" :height="tabHeight" :columns="columns1" :data="data1"></Table>
   </div>
 </template>
@@ -71,10 +71,10 @@ export default {
   data() {
     return {
       columns1: [
-        {
-          title: "分公司名称",
-          key: "id"
-        },
+        // {
+        //   title: "分公司名称",
+        //   key: "id"
+        // },
         {
           title: "项目名称",
           key: "name"
@@ -84,19 +84,23 @@ export default {
           key: "amount"
         },
         {
-          title: "能耗成本",
+          title: "总能耗成本（元）",
           key: "amountCost"
         },
         {
-          title: "能耗费用",
+          title: "总能耗收入（元）",
           key: "money"
         },
+         {
+          title: "总能耗溢价（元）",
+          key: "premiumMoney"
+        },
         {
-          title: "充值金额",
+          title: "充值总金额(元)",
           key: "prepayMoney"
         },
         {
-          title: "剩余金额",
+          title: "剩余总金额（元）",
           key: "remainMoney"
         },
 
@@ -105,7 +109,7 @@ export default {
       projectName: "",
       showList: 0,
       engeryType: "电",
-      sumMoney: 0,
+      amountCost: 0,
       selectedProject: {},
       engeryTypeList: [
         {
@@ -201,19 +205,22 @@ export default {
       const param = this.getQuery();
       this.getList(param)
         .then(res => {
+          console.log(res);
+
           if (res.data && res.data.content) {
             const name = res.data.content[0].name;
             let temp = res.data.content[0].list,temp2=[];
             for (let i = 0; i < temp.length; i++) {
-              let cur = temp[i]
+              let cur = temp[i];
               let item = {
                 amount: cur.amount,
                 amountCost: cur.amountCost,
-                id: cur.id,
                 money: cur.money,
-                name: cur.name,
+                name: name,
                 prepayMoney: cur.prepayMoney,
-                remainMoney: cur.remainMoney
+                remainMoney: cur.remainMoney,
+                premiumMoney: cur.premiumMoney,
+                isSum: true
               }
               for (let j = 0; j < cur.list.length; j++) {
                 let cur2 = cur.list[j];
@@ -223,8 +230,7 @@ export default {
             }
             this.data1 = temp2;
             console.log(this.data1);
-
-            this.sumMoney = res.data.content[0].sumMoney;
+            this.amountCost = res.data.content[0].amountCost;
             temp = null;
           }
         })
@@ -271,8 +277,7 @@ export default {
       })
       // this.getList(param)
         .then(res => {
-          console.log(res);
-
+          // console.log(res);
           const filename = decodeURI(
             res.headers["content-disposition"]
               .split(";")
@@ -306,7 +311,6 @@ export default {
     },
     // 下拉选项触发
     selectMenu(name) {
-      console.log(name);
       var indexArr = name===0?[0]:name.split("-"),
         selected;
       switch (indexArr.length) {
@@ -337,6 +341,12 @@ export default {
     },
     dropShow(){
       // this.$refs.drop.$children[1].$el.style.display='block';
+    },
+    rowClassName(row,index){
+        if (row.isSum) {
+          return 'table-sum-row'
+        }
+        return ''
     }
   },
   mounted() {
@@ -345,7 +355,7 @@ export default {
   }
 };
 </script>
-<style scoped>
+<style>
 .content {
   margin: 18px;
 }
@@ -355,8 +365,13 @@ export default {
   color: white;
 }
 
-.tButton {
+/* .tButton {
   display: inline-block;
   float: right;
+} */
+.ivu-table .table-sum-row td{
+  /* font-size: 14px; */
+  font-weight: 600;
+  background-color: #ececec;
 }
 </style>

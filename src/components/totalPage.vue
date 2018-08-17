@@ -78,6 +78,10 @@ export default {
     return {
       columns1: [
         {
+          title: "分公司名称",
+          key: "branchCompanyName"
+        },
+        {
           title: "项目名称",
           key: "buildingName"
         },
@@ -85,10 +89,6 @@ export default {
           title: "充值单号",
           key: "orderId"
         },
-        // {
-        //   title: "租户全码",
-        //   key: "tenantFlag"
-        // },
         {
           title: "能耗类型",
           key: "energyTypeId"
@@ -98,7 +98,7 @@ export default {
           key: "tenantName"
         },
         {
-          title: "仪表id",
+          title: "仪表编码",
           key: "meterId"
         },
         {
@@ -109,10 +109,10 @@ export default {
           title: "账单生成时间",
           key: "orderTime"
         },
-        // {
-        //   title: "微信支付时间",
-        //   key: "wxPayTime"
-        // },
+        {
+          title: "操作人",
+          key: "operateName"
+        },
         // {
         //   title: "更新状态时间",
         //   key: "updateTime"
@@ -221,6 +221,8 @@ export default {
       const param = this.getQuery();
       this.getList(param)
         .then(res => {
+          console.log(res);
+
           if (res.data && res.data.content) {
             // const name = res.data.content[0].name;
             let temp = res.data.content[0];
