@@ -150,7 +150,8 @@ export default {
         display: "none"
       },
       timeList: [],
-      fileID: ""
+      fileID: "",
+      sessionId: ''
     };
   },
   props: ["projectList"],
@@ -162,6 +163,18 @@ export default {
   methods: {
     inputhandle(e) {
       this.from.a = e.target.value;
+    },
+    getCookie(c_name){
+    if (document.cookie.length>0){
+        let c_start=document.cookie.indexOf(c_name + "=")
+        if (c_start!=-1){
+            c_start=c_start + c_name.length+1
+            let c_end=document.cookie.indexOf(";",c_start)
+            if (c_end==-1) c_end=document.cookie.length
+                return unescape(document.cookie.substring(c_start,c_end))
+            }
+        }
+    return ""
     },
     printSome() {
       let inner = this.$refs.tablePrint.$el.innerHTML;
@@ -181,29 +194,6 @@ export default {
         f.contentWindow.print();
       }, 1000);
     },
-    // downLoad() {
-    //   if (!this.projectName || !this.engeryType || !this.timeList[0]) {
-    //     return this.$Message.warning("选择条件");
-    //   }
-    //   const param = this.getQuery(1);
-    //   console.log(param);
-
-    //   this.getList(param)
-    //     .then(res => {
-    //       if (res.data && res.data.content) {
-    //         this.fileID = res.data.content[0].id;
-    //         console.log(res.data.content[0].id);
-    //         return res.data.content[0].id;
-    //       }
-    //     })
-    //     .then(id => {
-    //       this.downFile(id);
-    //     })
-    //     .catch(ex => {
-    //       console.log(ex);
-    //     });
-    // },
-
     // 下载
     downLoad() {
       if (!this.projectName || !this.engeryType || !this.timeList[0]) {
@@ -224,7 +214,10 @@ export default {
           console.log(res);
 
           if (res.data && res.data.content) {
-            // const name = res.data.content[0].name;
+            if (res.data.content[0]=='请先授权登录') {
+              this.$router.push({path:"/login"});
+              return this.$Message.warning("请先授权登录");
+            }
             let temp = res.data.content[0];
             this.data1 = temp.list;
             console.log(this.data1);
@@ -262,9 +255,12 @@ export default {
     },
     // 查询|下载接口
     getList(param) {
-      return this.$axios.post(
-        publicu + "unifier/FNCenterRecordPrePayGridService",
-        qs.stringify({ jsonString: JSON.stringify(param) })
+      return this.$axios({
+        method: "post",
+        url: publicu + "unifier/FNCenterRecordPrePayGridService",
+        data: qs.stringify({ jsonString: JSON.stringify(param) }),
+      }
+
       );
     },
 
@@ -348,7 +344,9 @@ export default {
     }
   },
   mounted() {
-    var bigHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 20;
+    this.sessionId = this.getCookie('admin');
+    console.log(this.sessionId);
+    let bigHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 20;
     this.tabHeight = bigHeight;
   }
 };

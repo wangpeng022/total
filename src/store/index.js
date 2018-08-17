@@ -8,12 +8,11 @@ export default new vuex.Store({
     obj:{
       message:'sdsdsds'
     },
-    userID:''
+    userID:'',
   },
   mutations:{
-    setUserid(state,userid,random){
+    setUserid(state,userid){
       state.userID=userid;
-      state.random=random;
     },
     updateMessage(state,payload){
       state.obj.message=payload

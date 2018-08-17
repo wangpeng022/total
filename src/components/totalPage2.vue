@@ -83,10 +83,6 @@ export default {
           title: "账单编号",
           key: "orderId"
         },
-        // {
-        //   title: "租户全码",
-        //   key: "tenantFlag"
-        // },
         {
           title: "能耗类型",
           key: "energyTypeId"
@@ -111,14 +107,6 @@ export default {
           title: "操作人",
           key: "userName"
         },
-        // {
-        //   title: "微信支付时间",
-        //   key: "wxPayTime"
-        // },
-        // {
-        //   title: "更新状态时间",
-        //   key: "updateTime"
-        // }
       ],
       data1: [],
       projectName: "",
@@ -180,28 +168,6 @@ export default {
         f.contentWindow.print();
       }, 1000);
     },
-    // downLoad() {
-    //   if (!this.projectName || !this.engeryType || !this.timeList[0]) {
-    //     return this.$Message.warning("选择条件");
-    //   }
-    //   const param = this.getQuery(1);
-    //   console.log(param);
-
-    //   this.getList(param)
-    //     .then(res => {
-    //       if (res.data && res.data.content) {
-    //         this.fileID = res.data.content[0].id;
-    //         console.log(res.data.content[0].id);
-    //         return res.data.content[0].id;
-    //       }
-    //     })
-    //     .then(id => {
-    //       this.downFile(id);
-    //     })
-    //     .catch(ex => {
-    //       console.log(ex);
-    //     });
-    // },
 
     // 下载
     downLoad() {
