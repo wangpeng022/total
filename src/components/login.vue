@@ -2,7 +2,8 @@
   <div class='login'>
     <div class="middle">
       <header>
-        <h1>租户报表显示系统</h1>
+        <img src="../../static/imgs/newCity.png" alt="">
+        <h1>新城悦能源管理中心平台</h1>
       </header>
       <Input v-model="username" icon="ios-personadd" size="large" placeholder="admin" clearable style="width: 300px;textAlign:center" autofocus @on-focus="back2empy"></Input>
       <br/>
@@ -57,22 +58,28 @@
         }else if(this.password == ''){
           this.returntext = "密码不能为空"
         }else{
-          axios.post(publicu+"unifier/FNCenterLoginService",qs.stringify({"jsonString": JSON.stringify({userId:this.username,password:this.password})})) .then((res)=>{
-            console.log(res);
-            if(res.data.content[0]&&res.data.content[0].result){
-              this.sessionId = res.data.content[0].sessionId;
-              setCookie('sessionId',this.sessionId);
-              setCookie('admin',this.sessionId);
-              this.$store.commit('setUserid',this.username);
-              this.$Message.success('欢迎回来');
-              this.$router.push({path:"/totalPage",params:{userid:this.username}});
-            }else{
-              this.$Message.warning('登录失败');
-              this.returntext = '用户名或密码错误'
-            }
-          }).catch((ex)=>{
-            console.log(ex)
-          })
+          // axios.post(publicu+"unifier/FNCenterLoginService",qs.stringify({"jsonString": JSON.stringify({userId:this.username,password:this.password})})) .then((res)=>{
+          //   console.log(res);
+          //   if(res.data.content[0]&&res.data.content[0].result){
+          //     this.sessionId = res.data.content[0].sessionId;
+          //     setCookie('sessionId',this.sessionId);
+          //     setCookie('admin',this.sessionId);
+          //     this.$store.commit('setUserid',this.username);
+          //     this.$Message.success('欢迎回来');
+          //     this.$router.push({path:"/totalPage",params:{userid:this.username}});
+          //   }else{
+          //     this.$Message.warning('登录失败');
+          //     this.returntext = '用户名或密码错误'
+          //   }
+          // }).catch((ex)=>{
+          //   console.log(ex)
+          // })
+          this.sessionId = '11-22-33-44';
+          setCookie('sessionId',this.sessionId);
+          setCookie('admin',this.sessionId);
+          this.$store.commit('setUserid',this.username);
+          this.$Message.success('欢迎回来');
+          this.$router.push({path:"/home",params:{userid:this.username}});
         }
       },
       back2empy(){
@@ -93,8 +100,14 @@
     right: 0;
     bottom: 0;
     left: 0;
-    background: #e9e9e9;
+    background: #fff;
     z-index: 10;
+  }
+  .login header img{
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    height: 40px;
   }
   .middle{
     position: absolute;
@@ -105,10 +118,11 @@
     border-radius: 4px;
     transform: translate(-50%,-50%);
     text-align: center;
-    background: #fff;
+    background: #EEF3FA;
+    box-shadow: 1px 1px 7px rgba(0,0,0,0.5);
   }
   .middle header{
-    margin: 50px 0 30px;
+    margin: 80px 0 20px;
   }
   .forget{
     position: absolute;

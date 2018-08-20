@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import login from '@/components/login'
 import totalPage from '@/components/totalPage'
 import tabs from '@/components/tabs'
+import home from '@/components/home'
 import store from '../store'
 const getCookie=(c_name)=>{
   if (document.cookie.length>0){
@@ -22,6 +23,23 @@ export default new Router({
   mode: 'history',
   routes: [
     {
+      path: '/',
+      name:'/',
+      redirect: '/home',
+    },
+    {
+      path: '/home',
+      name:'home',
+      component: home,
+      beforeEnter: (to, from, next) => {
+        if (getCookie("admin")) {
+            next();
+        }else{
+          next("login")
+          }
+      }
+    },
+    {
       path: '/totalPage',
       name:'totalPage',
       component: tabs,
@@ -33,6 +51,7 @@ export default new Router({
           }
       }
     },
+
     {
       path: '/login',
       name: 'login',
