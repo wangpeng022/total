@@ -4,10 +4,10 @@
         <a class="search" :class="{'long':search2long}" >
             <Icon class="ser" type="search" @click='searchS(1)'></Icon>
             <Icon class="close" type="close" @click='searchS(0)'></Icon>
-            <input class="serKey" type="text" v-model="serText">
+            <input class="serKey" type="text" v-model="serText" placeholder="请输入..." @input="pySearch">
         </a>
         <div class="list" v-show="serText">
-            <p>1111</p>
+            <p v-for="(item,index) in list" :key="index">{{item}}</p>
         </div>
         <Select v-model="model1" style="width:150px">
             <Option v-for="item in cityList" :value="item.value" :key="item.value">{{ item.label }}</Option>
@@ -38,9 +38,11 @@
     </div>
 </template>
 <script>
+const PinyinMatch = require('pinyin-match');
 export default {
   data() {
     return {
+        list: [],
       cityList: [
         {
           value: "万达",
@@ -63,8 +65,8 @@ export default {
           label: "首开"
         },
         {
-          value: "中粮",
-          label: "中粮"
+          value: "新城国际",
+          label: "新城国际"
         }
       ],
       engeryType: "电",
@@ -352,6 +354,23 @@ export default {
             },
             searchS(i){
                 this.search2long = i;
+            },
+            pySearch(){
+                this.list = [];
+                if (this.serText) {
+                    this.cityList.forEach((cur,index)=>{
+
+                        let index0 = PinyinMatch.match(cur.value, this.serText)[0];
+                        let index1 = PinyinMatch.match(cur.value, this.serText)[0];
+                        // console.log(PinyinMatch.match(cur.value, this.serText));
+
+                        let name = cur.value.slice(index0,index1+1);
+                        this.list.push(name);
+
+                    })
+
+                }
+
             }
         }
 };
@@ -395,6 +414,8 @@ export default {
     /* margin-left: 10px; */
 }
 .home .search .serKey{
+    position: relative;
+    top: -3px;
     outline: none;
     border:0px;
     width: 140px;
