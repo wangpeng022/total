@@ -7,8 +7,8 @@
         <h2>能源管理中心平台</h2>
       </div>
       <div class="right">
-        <router-link to="home">充值管理</router-link>
-        <router-link to="totalPage">报表管理</router-link>
+        <router-link :to='{name:"home"}'>充值管理</router-link>
+        <router-link :to='{name:"totalPage"}'>报表管理</router-link>
       </div>
       <div class="quit" @click="quit">
         退出
@@ -47,7 +47,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   width: 100%;
   height: 100%;
-  min-width: 1200px;
+  min-width: 800px;
   padding-top: 50px;
 }
 #app>header{
@@ -57,6 +57,7 @@ export default {
   display: flex;
   justify-content: space-between;
   width: 100%;
+  min-width: 800px;
   height: 50px;
   background-color: #374045;
 

@@ -53,14 +53,21 @@
     </Row>
     <br/>
     <Row ref="total">
-      <Col span="2">PC汇总：</Col>
+      <Col span="2">汇总：</Col>
       <Col span="2" v-text="sumMoney+'元'"></Col>
       <Col span="2">微信汇总：</Col>
-      <Col span="2" v-text="wxMoney+'元'"></Col>
-      <Col span="2">PC充值笔数：</Col>
-      <Col span="2" v-text="pcCount"></Col>
-      <Col span="2">微信充值笔数：</Col>
-      <Col span="2" v-text="wxCount"></Col>
+      <Col span="2">
+        <span v-text="wxMoney+'元'"></span>
+        &nbsp;
+        <span v-text="wxCount+'笔'"></span>
+      </Col>
+      <Col span="2">PC充值汇总：</Col>
+      <Col span="2">
+        <span v-text="sumMoney+'元'"></span>
+        &nbsp;
+        <span v-text="pcCount"></span>
+      </Col>
+
     </Row>
     <br/>
     <Table ref="table" :height="tabHeight" :columns="columns1" :data="data1"></Table>

@@ -3,19 +3,19 @@
         项目：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <a class="search" :class="{'long':search2long}" >
             <Icon class="ser" type="search" @click='searchS(1)'></Icon>
-            <Icon class="close" type="close" @click='searchS(0)'></Icon>
+            <Icon class="close" type="close" @click='clear(0)'></Icon>
             <input class="serKey" type="text" v-model="serText" placeholder="请输入..." @input="pySearch">
         </a>
         <div class="list" v-show="serText">
-            <p v-for="(item,index) in list" :key="index">{{item}}</p>
+            <p v-for="(item,index) in cityListSearch" :key="index" @click="listClick">{{item}}</p>
         </div>
         <Select v-model="model1" style="width:150px">
-            <Option v-for="item in cityList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+            <Option v-for="(item,index) in cityList" :value="item.name" :key="index">{{ item.name }}</Option>
         </Select>
             <br/>
             <br/>
         状态：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <Select v-model="model2" style="width:150px">
+        <Select v-model="model2" style="width:150px" placeholder="已激活">
                     <Option v-for="item in activeList" :value="item.name" :key="item.value"></Option>
         </Select>
         &nbsp;
@@ -24,52 +24,56 @@
                     <Option v-for="item in engeryTypeList" :value="item.name" :key="item.value"></Option>
                 </Select>
                 &nbsp;
-                <Button>查询</Button>
+                <Button @click="getData">查询</Button>
         <br/><br/>
 
-        <Table :columns="columns8" :data="data7" size="small" ref="table"></Table>
+        <Table :columns="columns8" stripe :data="data7" size="small" ref="table" @on-row-click='rowDetails'></Table>
         <div style="margin: 10px;overflow: hidden">
         <div style="float: right;">
             <Page :total="100" :current="1" @on-change="changePage"></Page>
         </div>
-        <Button type="primary" size="large" @click="exportData(1)"><Icon type="ios-download-outline"></Icon> 原始数据下载</Button>
-        <Button type="primary" size="large" @click="exportData(2)"><Icon type="ios-download-outline"></Icon> 排序后的数据下载</Button>
+        <!-- <Button type="primary" size="large" @click="exportData(1)"><Icon type="ios-download-outline"></Icon> 原始数据下载</Button>
+        <Button type="primary" size="large" @click="exportData(2)"><Icon type="ios-download-outline"></Icon> 排序后的数据下载</Button> -->
     </div>
     </div>
 </template>
 <script>
-const PinyinMatch = require('pinyin-match');
+const PinyinMatch = require("pinyin-match");
+import axios from "axios";
+import publicu from '../api.js';
+import qs from "qs";
 export default {
+  name: "home",
   data() {
     return {
-        list: [],
       cityList: [
         {
-          value: "万达",
-          label: "万达"
+          name: "万达",
+          id: "万达"
         },
         {
-          value: "龙湖",
-          label: "龙湖"
+          name: "龙湖",
+          id: "龙湖"
         },
         {
-          value: "万科",
-          label: "万科"
+          name: "万科",
+          id: "万科"
         },
         {
-          value: "恒大",
-          label: "恒大"
+          name: "恒大",
+          id: "恒大"
         },
         {
-          value: "首开",
-          label: "首开"
+          name: "首开",
+          id: "首开"
         },
         {
-          value: "新城国际",
-          label: "新城国际"
+          name: "新城国际",
+          id: "新城国际"
         }
       ],
-      engeryType: "电",
+      cityListSearch: [],
+      engeryType: "电",//参数3 能源类型
       engeryTypeList: [
         {
           value: "Dian",
@@ -88,359 +92,431 @@ export default {
           name: "燃气"
         }
       ],
-      model1: "",
+      model1: "",//参数1 项目
       search2long: 0,
-      serText: '',
-      model2: "",
+      serText: "",
+      model2: "已激活",//参数2 状态
       activeList: [
-           {
-            value: "actived",
-            name: "已激活"
-            },
-             {
-            value: "unActive",
-            name: "未激活"
-            }
+        {
+          value: "actived",
+          name: "已激活"
+        },
+        {
+          value: "unActive",
+          name: "未激活"
+        }
       ],
       columns8: [
-                    {
-                        "title": "Name",
-                        "key": "name",
-                        // "fixed": "left",
-                        "width": 200
-                    },
-                    {
-                        "title": "Show",
-                        "key": "show",
-                        "width": 150,
-                        "sortable": true,
-                    },
-                    {
-                        "title": "Weak",
-                        "key": "weak",
-                        "width": 150,
-                        "sortable": true
-                    },
-                    {
-                        "title": "Signin",
-                        "key": "signin",
-                        "width": 150,
-                        "sortable": true
-                    },
-                    {
-                        "title": "Click",
-                        "key": "click",
-                        "width": 150,
-                        "sortable": true
-                    },
-                    {
-                        "title": "Active",
-                        "key": "active",
-                        "width": 150,
-                        "sortable": true
-                    },
-                    {
-                        "title": "7, retained",
-                        "key": "day7",
-                        "width": 150,
-                        "sortable": true
-                    },
-                    {
-                        "title": "30, retained",
-                        "key": "day30",
-                        "width": 150,
-                        "sortable": true
-                    },
-                    {
-                        "title": "The next day left",
-                        "key": "tomorrow",
-                        "width": 150,
-                        "sortable": true
-                    },
-                    {
-                        "title": "Day Active",
-                        "key": "day",
-                        "width": 150,
-                        "sortable": true
-                    },
-                    {
-                        "title": "Week Active",
-                        "key": "week",
-                        "width": 150,
-                        "sortable": true
-                    },
-                    {
-                        "title": "Month Active",
-                        "key": "month",
-                        "width": 150,
-                        "sortable": true
-                    }
-                ],
-                data7: [
-                    {
-                        "name": "Name1",
-                        "fav": 0,
-                        "show": 7302,
-                        "weak": 5627,
-                        "signin": 1563,
-                        "click": 4254,
-                        "active": 1438,
-                        "day7": 274,
-                        "day30": 285,
-                        "tomorrow": 1727,
-                        "day": 558,
-                        "week": 4440,
-                        "month": 5610
-                    },
-                    {
-                        "name": "Name2",
-                        "fav": 0,
-                        "show": 4720,
-                        "weak": 4086,
-                        "signin": 3792,
-                        "click": 8690,
-                        "active": 8470,
-                        "day7": 8172,
-                        "day30": 5197,
-                        "tomorrow": 1684,
-                        "day": 2593,
-                        "week": 2507,
-                        "month": 1537
-                    },
-                    {
-                        "name": "Name3",
-                        "fav": 0,
-                        "show": 7181,
-                        "weak": 8007,
-                        "signin": 8477,
-                        "click": 1879,
-                        "active": 16,
-                        "day7": 2249,
-                        "day30": 3450,
-                        "tomorrow": 377,
-                        "day": 1561,
-                        "week": 3219,
-                        "month": 1588
-                    },
-                    {
-                        "name": "Name4",
-                        "fav": 0,
-                        "show": 9911,
-                        "weak": 8976,
-                        "signin": 8807,
-                        "click": 8050,
-                        "active": 7668,
-                        "day7": 1547,
-                        "day30": 2357,
-                        "tomorrow": 7278,
-                        "day": 5309,
-                        "week": 1655,
-                        "month": 9043
-                    },
-                    {
-                        "name": "Name5",
-                        "fav": 0,
-                        "show": 934,
-                        "weak": 1394,
-                        "signin": 6463,
-                        "click": 5278,
-                        "active": 9256,
-                        "day7": 209,
-                        "day30": 3563,
-                        "tomorrow": 8285,
-                        "day": 1230,
-                        "week": 4840,
-                        "month": 9908
-                    },
-                    {
-                        "name": "Name6",
-                        "fav": 0,
-                        "show": 6856,
-                        "weak": 1608,
-                        "signin": 457,
-                        "click": 4949,
-                        "active": 2909,
-                        "day7": 4525,
-                        "day30": 6171,
-                        "tomorrow": 1920,
-                        "day": 1966,
-                        "week": 904,
-                        "month": 6851
-                    },
-                    {
-                        "name": "Name7",
-                        "fav": 0,
-                        "show": 5107,
-                        "weak": 6407,
-                        "signin": 4166,
-                        "click": 7970,
-                        "active": 1002,
-                        "day7": 8701,
-                        "day30": 9040,
-                        "tomorrow": 7632,
-                        "day": 4061,
-                        "week": 4359,
-                        "month": 3676
-                    },
-                    {
-                        "name": "Name8",
-                        "fav": 0,
-                        "show": 862,
-                        "weak": 6520,
-                        "signin": 6696,
-                        "click": 3209,
-                        "active": 6801,
-                        "day7": 6364,
-                        "day30": 6850,
-                        "tomorrow": 9408,
-                        "day": 2481,
-                        "week": 1479,
-                        "month": 2346
-                    },
-                    {
-                        "name": "Name9",
-                        "fav": 0,
-                        "show": 567,
-                        "weak": 5859,
-                        "signin": 128,
-                        "click": 6593,
-                        "active": 1971,
-                        "day7": 7596,
-                        "day30": 3546,
-                        "tomorrow": 6641,
-                        "day": 1611,
-                        "week": 5534,
-                        "month": 3190
-                    },
-                    {
-                        "name": "Name10",
-                        "fav": 0,
-                        "show": 3651,
-                        "weak": 1819,
-                        "signin": 4595,
-                        "click": 7499,
-                        "active": 7405,
-                        "day7": 8710,
-                        "day30": 5518,
-                        "tomorrow": 428,
-                        "day": 9768,
-                        "week": 2864,
-                        "month": 5811
-                    }
-                ]
+        {
+          title: "Name",
+          key: "name",
+          // "fixed": "left",
+          width: 200
+        },
+        {
+          title: "Show",
+          key: "show",
+          width: 150,
+          sortable: true
+        },
+        {
+          title: "Weak",
+          key: "weak",
+          width: 150,
+          sortable: true
+        },
+        {
+          title: "Signin",
+          key: "signin",
+          width: 150,
+          sortable: true
+        },
+        {
+          title: "Click",
+          key: "click",
+          width: 150,
+          sortable: true
+        },
+        {
+          title: "Active",
+          key: "active",
+          width: 150,
+          sortable: true
+        },
+        {
+          title: "7, retained",
+          key: "day7",
+          width: 150,
+          sortable: true
+        },
+        {
+          title: "30, retained",
+          key: "day30",
+          width: 150,
+          sortable: true
+        },
+        {
+          title: "The next day left",
+          key: "tomorrow",
+          width: 150,
+          sortable: true
+        },
+        {
+          title: "Day Active",
+          key: "day",
+          width: 150,
+          sortable: true
+        },
+        {
+          title: "Week Active",
+          key: "week",
+          width: 150,
+          sortable: true
+        },
+        {
+          title: "Month Active",
+          key: "month",
+          width: 150,
+          sortable: true
+        }
+      ],
+      data7: [
+        {
+          name: "Name1",
+          fav: 0,
+          show: 7302,
+          weak: 5627,
+          signin: 1563,
+          click: 4254,
+          active: 1438,
+          day7: 274,
+          day30: 285,
+          tomorrow: 1727,
+          day: 558,
+          week: 4440,
+          month: 5610
+        },
+        {
+          name: "Name2",
+          fav: 0,
+          show: 4720,
+          weak: 4086,
+          signin: 3792,
+          click: 8690,
+          active: 8470,
+          day7: 8172,
+          day30: 5197,
+          tomorrow: 1684,
+          day: 2593,
+          week: 2507,
+          month: 1537
+        },
+        {
+          name: "Name3",
+          fav: 0,
+          show: 7181,
+          weak: 8007,
+          signin: 8477,
+          click: 1879,
+          active: 16,
+          day7: 2249,
+          day30: 3450,
+          tomorrow: 377,
+          day: 1561,
+          week: 3219,
+          month: 1588
+        },
+        {
+          name: "Name4",
+          fav: 0,
+          show: 9911,
+          weak: 8976,
+          signin: 8807,
+          click: 8050,
+          active: 7668,
+          day7: 1547,
+          day30: 2357,
+          tomorrow: 7278,
+          day: 5309,
+          week: 1655,
+          month: 9043
+        },
+        {
+          name: "Name5",
+          fav: 0,
+          show: 934,
+          weak: 1394,
+          signin: 6463,
+          click: 5278,
+          active: 9256,
+          day7: 209,
+          day30: 3563,
+          tomorrow: 8285,
+          day: 1230,
+          week: 4840,
+          month: 9908
+        },
+        {
+          name: "Name6",
+          fav: 0,
+          show: 6856,
+          weak: 1608,
+          signin: 457,
+          click: 4949,
+          active: 2909,
+          day7: 4525,
+          day30: 6171,
+          tomorrow: 1920,
+          day: 1966,
+          week: 904,
+          month: 6851
+        },
+        {
+          name: "Name7",
+          fav: 0,
+          show: 5107,
+          weak: 6407,
+          signin: 4166,
+          click: 7970,
+          active: 1002,
+          day7: 8701,
+          day30: 9040,
+          tomorrow: 7632,
+          day: 4061,
+          week: 4359,
+          month: 3676
+        },
+        {
+          name: "Name8",
+          fav: 0,
+          show: 862,
+          weak: 6520,
+          signin: 6696,
+          click: 3209,
+          active: 6801,
+          day7: 6364,
+          day30: 6850,
+          tomorrow: 9408,
+          day: 2481,
+          week: 1479,
+          month: 2346
+        },
+        {
+          name: "Name9",
+          fav: 0,
+          show: 567,
+          weak: 5859,
+          signin: 128,
+          click: 6593,
+          active: 1971,
+          day7: 7596,
+          day30: 3546,
+          tomorrow: 6641,
+          day: 1611,
+          week: 5534,
+          month: 3190
+        },
+        {
+          name: "Name10",
+          fav: 0,
+          show: 3651,
+          weak: 1819,
+          signin: 4595,
+          click: 7499,
+          active: 7405,
+          day7: 8710,
+          day30: 5518,
+          tomorrow: 428,
+          day: 9768,
+          week: 2864,
+          month: 5811
+        }
+      ]
     };
   },
   methods: {
-            exportData (type) {
-                if (type === 1) {
-                    this.$refs.table.exportCsv({
-                        filename: 'The original data'
-                    });
-                } else if (type === 2) {
-                    this.$refs.table.exportCsv({
-                        filename: 'Sorting and filtering data',
-                        original: false
-                    });
-                } else if (type === 3) {
-                    this.$refs.table.exportCsv({
-                        filename: 'Custom data',
-                        columns: this.columns8.filter((col, index) => index < 4),
-                        data: this.data7.filter((data, index) => index < 4)
-                    });
-                }
-            },
-            changePage () {
-                console.log('翻页');
-            },
-            searchS(i){
-                this.search2long = i;
-            },
-            pySearch(){
-                this.list = [];
-                if (this.serText) {
-                    this.cityList.forEach((cur,index)=>{
+    exportData(type) {
+      if (type === 1) {
+        this.$refs.table.exportCsv({
+          filename: "The original data"
+        });
+      } else if (type === 2) {
+        this.$refs.table.exportCsv({
+          filename: "Sorting and filtering data",
+          original: false
+        });
+      } else if (type === 3) {
+        this.$refs.table.exportCsv({
+          filename: "Custom data",
+          columns: this.columns8.filter((col, index) => index < 4),
+          data: this.data7.filter((data, index) => index < 4)
+        });
+      }
+    },
+    changePage() {
+      console.log("翻页");
+    },
+    searchS(i) {
+      this.search2long = i;
+    },
+    clear(i){
+        if (this.serText) {
+            return this.serText = '';
+        }
+        this.searchS(i);
+    },
+    pySearch() {
+      this.cityListSearch = [];
+      if (this.serText) {
+        this.cityList.forEach((cur, index) => {
+          let mat = PinyinMatch.match(cur.name, this.serText);
+          if (mat) {
+            let index0 = PinyinMatch.match(cur.name, this.serText)[0];
+            let index1 = PinyinMatch.match(cur.name, this.serText)[0];
+            // console.log(PinyinMatch.match(cur.name, this.serText));
 
-                        let index0 = PinyinMatch.match(cur.value, this.serText)[0];
-                        let index1 = PinyinMatch.match(cur.value, this.serText)[0];
-                        // console.log(PinyinMatch.match(cur.value, this.serText));
+            let name = cur.name.slice(index0, index1 + 1);
+            this.cityListSearch.push(cur.name);
+          }
+        });
+      }
+    },
+    listClick(e) {
+      console.log(e.target.innerText);
+      this.model1 = e.target.innerText;
+      this.serText = "";
+      this.search2long = 0;
+    },
+    //单击行跳转到详情
+    rowDetails(a, b) {
+      // console.log(a,b);
+      this.$router.push({ path: `/listDetails/${a.name}`, query: a });
+    },
+    getProjectList() {
+      axios.post(publicu+"unifier/FNCenterBuildingListService",qs.stringify({"jsonString": JSON.stringify({keyword:''})})) .then((res)=>{
+            console.log(res);
+            if (res.data.content[0]=='请先授权登录') {
+                return this.$router.push('login');
+            }
+            if(res.data.content[0]&&res.data.result){
+               this.cityList = res.data.content[0];
+               console.log(this.cityList);
 
-                        let name = cur.value.slice(index0,index1+1);
-                        this.list.push(name);
-
-                    })
-
-                }
+            }else{
+                console.log(1111);
 
             }
+          }).catch((ex)=>{
+            console.log(ex)
+          })
+    },
+    //查询
+    getData(){
+        if (!this.model1||!this.model2||!this.engeryType) {
+            return this.$Message.warning("选择条件");
         }
+        // 6个参数 keyword非必须
+        let param = {
+            bulidingId: this.cityList.filter(cur=>
+                cur.name == this.model1)[0].id,
+            status: this.model2,
+            energyTypeId: this.engeryType,
+            keyword: '',
+            pageIndex: 1,
+            pageSize: 100,
+        }
+        axios.post(publicu+"unifier/FNCenterTenantListService",qs.stringify({"jsonString": JSON.stringify({keyword:''})})) .then((res)=>{
+            console.log(res);
+            if (res.data.content[0]=='请先授权登录') {
+                // return this.$router.push('login');
+            }
+            if(res.data.content[0]&&res.data.result){
+                console.log(222);
+            }else{
+                console.log(1111);
+            }
+          }).catch((ex)=>{
+            console.log(ex)
+          })
+    }
+  },
+  mounted() {
+      this.getProjectList();
+  },
 };
 </script>
 <style scoped>
 .home {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    padding: 10px;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 10px;
 }
-.home .search{
-    position: absolute;
-    top: 10px;
-    left: 55px;
-    display: inline-block;
-    width: 34px;
-    height: 34px;
-    border: 1px solid #DDDEE1;
-    border-radius: 17px;
-    /* text-align: center; */
-    line-height: 34px;
-    z-index: 15;
-    background: #fff;
-    transition: width .5s ;
-    overflow: hidden;
+.home .search {
+  position: absolute;
+  top: 10px;
+  left: 55px;
+  display: inline-block;
+  width: 34px;
+  height: 34px;
+  border: 1px solid #dddee1;
+  border-radius: 17px;
+  /* text-align: center; */
+  line-height: 34px;
+  z-index: 15;
+  background: #fff;
+  transition: width 0.5s;
+  overflow: hidden;
 }
-.home .search.long{
-    width: 205px;
+.home .search.long {
+  width: 205px;
 }
-.home .search:hover{
-    border: 1px solid #57A3F3;
+.home .search:hover {
+  border: 1px solid #57a3f3;
 }
-.home .search:active{
-    border: 1px solid #57A3F3;
-    box-shadow: 0 0 3px #57A3F3
+.home .search:active {
+  border: 1px solid #57a3f3;
+  box-shadow: 0 0 3px #57a3f3;
 }
-.home .search .ser{
-    font-size: 18px;
-    padding: 7px 9px;
-    /* margin-left: 10px; */
+.home .search .ser {
+  font-size: 18px;
+  padding: 7px 9px;
+  /* margin-left: 10px; */
 }
-.home .search .serKey{
-    position: relative;
-    top: -3px;
-    outline: none;
-    border:0px;
-    width: 140px;
-    height: 100%;
+.home .search .serKey {
+  position: relative;
+  top: -3px;
+  outline: none;
+  border: 0px;
+  width: 140px;
+  height: 100%;
 }
-.home .close{
-    position: absolute;
-    top: 0;
-    left: 175px;
-    padding: 10px;
-    font-size: 12px;
-    color: #c2c2c2;
+.home .close {
+  position: absolute;
+  top: 0;
+  left: 175px;
+  padding: 10px;
+  font-size: 12px;
+  color: #c2c2c2;
 }
-.home .close:hover{
-    color: #374045;
+.home .close:hover {
+  color: #374045;
 }
-.home .list{
-    position: absolute;
-    top: 44px;
-    left: 55px;
-    width: 206px;
-    min-height: 50px;
-    border: 1px solid #DDDEE1;
-    border-radius: 4px;
-    background: #fff;
-    z-index: 16;
+.home .list {
+  position: absolute;
+  top: 44px;
+  left: 55px;
+  width: 206px;
+  min-height: 50px;
+  border: 1px solid #dddee1;
+  border-radius: 4px;
+  background: #fff;
+  z-index: 16;
+}
+.home .list p {
+  padding-left: 30px;
+}
+.home .list p:hover {
+  background: #57a3f3;
 }
 </style>

@@ -4,6 +4,7 @@ import login from '@/components/login'
 import totalPage from '@/components/totalPage'
 import tabs from '@/components/tabs'
 import home from '@/components/home'
+import listDetails from '@/components/listDetails'
 import store from '../store'
 const getCookie=(c_name)=>{
   if (document.cookie.length>0){
@@ -31,6 +32,19 @@ export default new Router({
       path: '/home',
       name:'home',
       component: home,
+      beforeEnter: (to, from, next) => {
+        if (getCookie("admin")) {
+            next();
+        }else{
+          next("login")
+          }
+      }
+    },
+    {
+      path: '/listDetails/:id',
+      name:'listDetails',
+      component: listDetails,
+      props: true,
       beforeEnter: (to, from, next) => {
         if (getCookie("admin")) {
             next();
