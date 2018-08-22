@@ -4,7 +4,7 @@
         <a class="search" :class="{'long':search2long}" >
             <Icon class="ser" type="search" @click='searchS(1)'></Icon>
             <Icon class="close" type="close" @click='clear(0)'></Icon>
-            <input class="serKey" type="text" v-model="serText" placeholder="请输入..." @input="pySearch">
+            <input ref='serKey' class="serKey" type="text" v-model="serText" placeholder="请输入..." @input="pySearch" @blur="clear(0)">
         </a>
         <div class="list" v-show="serText">
             <p v-for="(item,index) in cityListSearch" :key="index" @click="listClick">{{item}}</p>
@@ -25,9 +25,10 @@
                 </Select>
                 &nbsp;
                 <Button @click="getData">查询</Button>
+                <Input icon="ios-search" style="width:250px;float:right" placeholder="请输入租户名称或编号"></Input>
         <br/><br/>
 
-        <Table :columns="columns8" stripe :data="data7" size="small" ref="table" @on-row-click='rowDetails'></Table>
+        <Table :columns="columns8" stripe :data="data7" :height="tabHeight" size="small" ref="table" @on-row-click='rowDetails'></Table>
         <div style="margin: 10px;overflow: hidden">
         <div style="float: right;">
             <Page :total="100" :current="1" @on-change="changePage"></Page>
@@ -40,7 +41,7 @@
 <script>
 const PinyinMatch = require("pinyin-match");
 import axios from "axios";
-import publicu from '../api.js';
+import publicu from "../api.js";
 import qs from "qs";
 export default {
   name: "home",
@@ -73,7 +74,7 @@ export default {
         }
       ],
       cityListSearch: [],
-      engeryType: "电",//参数3 能源类型
+      engeryType: "电", //参数3 能源类型
       engeryTypeList: [
         {
           value: "Dian",
@@ -92,246 +93,82 @@ export default {
           name: "燃气"
         }
       ],
-      model1: "",//参数1 项目
+      model1: "", //参数1 项目
       search2long: 0,
       serText: "",
-      model2: "已激活",//参数2 状态
+      model2: "已激活", //参数2 状态
       activeList: [
         {
-          value: "actived",
-          name: "已激活"
+          value: 0,
+          name: "未激活"
         },
         {
-          value: "unActive",
-          name: "未激活"
+          value: 1,
+          name: "已激活"
         }
       ],
       columns8: [
         {
-          title: "Name",
-          key: "name",
-          // "fixed": "left",
-          width: 200
+          title: "租户名称",
+          key: "tenantName"
+          // width: 150
         },
         {
-          title: "Show",
-          key: "show",
-          width: 150,
+          title: "租户编号",
+          key: "tenantId",
+          // width: 150,
           sortable: true
         },
         {
-          title: "Weak",
-          key: "weak",
-          width: 150,
+          title: "房间编号",
+          key: "roomIds",
+          // width: 150,
           sortable: true
         },
         {
-          title: "Signin",
-          key: "signin",
-          width: 150,
+          title: "剩余金额",
+          key: "remainMoney",
+          // width: 150,
           sortable: true
         },
         {
-          title: "Click",
-          key: "click",
-          width: 150,
+          title: "剩余能源",
+          key: "remainData",
+          // width: 150,
           sortable: true
         },
         {
-          title: "Active",
-          key: "active",
-          width: 150,
-          sortable: true
-        },
-        {
-          title: "7, retained",
-          key: "day7",
-          width: 150,
-          sortable: true
-        },
-        {
-          title: "30, retained",
-          key: "day30",
-          width: 150,
-          sortable: true
-        },
-        {
-          title: "The next day left",
-          key: "tomorrow",
-          width: 150,
-          sortable: true
-        },
-        {
-          title: "Day Active",
-          key: "day",
-          width: 150,
-          sortable: true
-        },
-        {
-          title: "Week Active",
-          key: "week",
-          width: 150,
-          sortable: true
-        },
-        {
-          title: "Month Active",
-          key: "month",
-          width: 150,
+          title: "剩余天数",
+          key: "remiandays",
+          // width: 150,
           sortable: true
         }
       ],
       data7: [
         {
-          name: "Name1",
-          fav: 0,
-          show: 7302,
-          weak: 5627,
-          signin: 1563,
-          click: 4254,
-          active: 1438,
-          day7: 274,
-          day30: 285,
-          tomorrow: 1727,
-          day: 558,
-          week: 4440,
-          month: 5610
+          tenantName: "Name1",
+          tenantId: 11,
+          tenantFlag: 7302,
+          buildingId: 5627,
+          buildingName: "www",
+          roomIds: 4254,
+          remainMoney: 1438,
+          remainData: 274,
+          remiandays: 285
         },
         {
-          name: "Name2",
-          fav: 0,
-          show: 4720,
-          weak: 4086,
-          signin: 3792,
-          click: 8690,
-          active: 8470,
-          day7: 8172,
-          day30: 5197,
-          tomorrow: 1684,
-          day: 2593,
-          week: 2507,
-          month: 1537
-        },
-        {
-          name: "Name3",
-          fav: 0,
-          show: 7181,
-          weak: 8007,
-          signin: 8477,
-          click: 1879,
-          active: 16,
-          day7: 2249,
-          day30: 3450,
-          tomorrow: 377,
-          day: 1561,
-          week: 3219,
-          month: 1588
-        },
-        {
-          name: "Name4",
-          fav: 0,
-          show: 9911,
-          weak: 8976,
-          signin: 8807,
-          click: 8050,
-          active: 7668,
-          day7: 1547,
-          day30: 2357,
-          tomorrow: 7278,
-          day: 5309,
-          week: 1655,
-          month: 9043
-        },
-        {
-          name: "Name5",
-          fav: 0,
-          show: 934,
-          weak: 1394,
-          signin: 6463,
-          click: 5278,
-          active: 9256,
-          day7: 209,
-          day30: 3563,
-          tomorrow: 8285,
-          day: 1230,
-          week: 4840,
-          month: 9908
-        },
-        {
-          name: "Name6",
-          fav: 0,
-          show: 6856,
-          weak: 1608,
-          signin: 457,
-          click: 4949,
-          active: 2909,
-          day7: 4525,
-          day30: 6171,
-          tomorrow: 1920,
-          day: 1966,
-          week: 904,
-          month: 6851
-        },
-        {
-          name: "Name7",
-          fav: 0,
-          show: 5107,
-          weak: 6407,
-          signin: 4166,
-          click: 7970,
-          active: 1002,
-          day7: 8701,
-          day30: 9040,
-          tomorrow: 7632,
-          day: 4061,
-          week: 4359,
-          month: 3676
-        },
-        {
-          name: "Name8",
-          fav: 0,
-          show: 862,
-          weak: 6520,
-          signin: 6696,
-          click: 3209,
-          active: 6801,
-          day7: 6364,
-          day30: 6850,
-          tomorrow: 9408,
-          day: 2481,
-          week: 1479,
-          month: 2346
-        },
-        {
-          name: "Name9",
-          fav: 0,
-          show: 567,
-          weak: 5859,
-          signin: 128,
-          click: 6593,
-          active: 1971,
-          day7: 7596,
-          day30: 3546,
-          tomorrow: 6641,
-          day: 1611,
-          week: 5534,
-          month: 3190
-        },
-        {
-          name: "Name10",
-          fav: 0,
-          show: 3651,
-          weak: 1819,
-          signin: 4595,
-          click: 7499,
-          active: 7405,
-          day7: 8710,
-          day30: 5518,
-          tomorrow: 428,
-          day: 9768,
-          week: 2864,
-          month: 5811
+          tenantName: "Name2",
+          tenantId: 12,
+          tenantFlag: 7304,
+          buildingId: 5626,
+          buildingName: "www",
+          roomIds: 4255,
+          remainMoney: 2438,
+          remainData: 284,
+          remiandays: 275
         }
-      ]
+      ],
+      tabHeight: ""
     };
   },
   methods: {
@@ -358,12 +195,19 @@ export default {
     },
     searchS(i) {
       this.search2long = i;
+      if (i==1) {
+        setTimeout(() => {
+        this.$refs.serKey.focus();
+        }, 500);
+      }
     },
-    clear(i){
-        if (this.serText) {
-            return this.serText = '';
-        }
-        this.searchS(i);
+    clear(i) {
+      if (this.serText) {
+        this.serText = ""
+        this.$refs.serKey.focus();
+        return
+      }
+      this.searchS(i);
     },
     pySearch() {
       this.cityListSearch = [];
@@ -392,57 +236,92 @@ export default {
       // console.log(a,b);
       this.$router.push({ path: `/listDetails/${a.name}`, query: a });
     },
+    //初始化时获取项目列表
     getProjectList() {
-      axios.post(publicu+"unifier/FNCenterBuildingListService",qs.stringify({"jsonString": JSON.stringify({keyword:''})})) .then((res)=>{
-            console.log(res);
-            if (res.data.content[0]=='请先授权登录') {
-                return this.$router.push('login');
-            }
-            if(res.data.content[0]&&res.data.result){
-               this.cityList = res.data.content[0];
-               console.log(this.cityList);
-
-            }else{
-                console.log(1111);
-
-            }
-          }).catch((ex)=>{
-            console.log(ex)
-          })
+      axios.post(
+          publicu + "unifier/FNCenterBuildingListService",
+          qs.stringify({ jsonString: JSON.stringify({}) })
+        )
+        .then(res => {
+          console.log(res);
+          // if (res.data.content[0] == "请先授权登录") {
+          //   return this.$router.push("login");
+          // }
+          if (res.data.content[0] && res.data.result) {
+            this.cityList = res.data.content[0];
+            console.log(this.cityList);
+          } else {
+            console.log(1111);
+          }
+        })
+        .catch(ex => {
+          console.log(ex);
+        });
+    },
+    // 初始化获取能源类型列表
+    getEnergyType(){
+      axios.post(
+          publicu + "unifier/FNCCommonEnergyTypePayTypeListService",
+          qs.stringify({ jsonString: JSON.stringify({}) })
+        )
+        .then(res => {
+          console.log(res);
+          // if (res.data.content[0] == "请先授权登录") {
+          //   return this.$router.push("login");
+          // }
+          if (res.data.content[0] && res.data.result) {
+            // this.cityList = res.data.content[0];
+            // console.log(this.cityList);
+          } else {
+            console.log(1111);
+          }
+        })
+        .catch(ex => {
+          console.log(ex);
+        });
     },
     //查询
-    getData(){
-        if (!this.model1||!this.model2||!this.engeryType) {
-            return this.$Message.warning("选择条件");
-        }
-        // 6个参数 keyword非必须
-        let param = {
-            bulidingId: this.cityList.filter(cur=>
-                cur.name == this.model1)[0].id,
-            status: this.model2,
-            energyTypeId: this.engeryType,
-            keyword: '',
-            pageIndex: 1,
-            pageSize: 100,
-        }
-        axios.post(publicu+"unifier/FNCenterTenantListService",qs.stringify({"jsonString": JSON.stringify({keyword:''})})) .then((res)=>{
-            console.log(res);
-            if (res.data.content[0]=='请先授权登录') {
-                // return this.$router.push('login');
-            }
-            if(res.data.content[0]&&res.data.result){
-                console.log(222);
-            }else{
-                console.log(1111);
-            }
-          }).catch((ex)=>{
-            console.log(ex)
-          })
+    getData() {
+      if (!this.model1 || !this.model2 || !this.engeryType) {
+        return this.$Message.warning("选择条件");
+      }
+      // 6个参数 keyword非必须
+      let params = {
+        buildingId: this.cityList.filter(cur => cur.name == this.model1)[0].id,
+        status: this.activeList.filter(cur => cur.name == this.model2)[0].value,
+        energyTypeId: this.engeryTypeList.filter(
+          item => item["name"] == this.engeryType
+        )[0].value,
+        // keyword: "",
+        pageIndex: 1,
+        pageSize: 100
+      };
+      axios.post(
+          publicu + "unifier/FNCenterTenantListService",
+          qs.stringify({ jsonString: JSON.stringify(params) })
+        )
+        .then(res => {
+          console.log(res);
+          if (res.data.content[0] == "请先授权登录") {
+            // return this.$router.push('login');
+          }
+          if (res.data.content[0] && res.data.result) {
+            console.log(222);
+          } else {
+            console.log(1111);
+          }
+        })
+        .catch(ex => {
+          console.log(ex);
+        });
     }
   },
   mounted() {
-      this.getProjectList();
-  },
+    this.getProjectList();
+    this.getEnergyType();
+    var bigHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 120;
+    this.tabHeight = bigHeight;
+  }
 };
 </script>
 <style scoped>

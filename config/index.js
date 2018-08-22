@@ -11,7 +11,8 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/api': {
-        target: 'http://192.168.100.201:8080/EMS_Finein_Center/Spring/MVC/entrance/', // 数据接口
+        //201
+        target: 'http://192.168.100.124:8080/EMS_Finein_Center/Spring/MVC/entrance/', // 数据接口
         changeOrigin: true, // 跨域
         secure: false,
         pathRewrite: {

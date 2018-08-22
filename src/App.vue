@@ -87,7 +87,7 @@ export default {
 #app>header .right a{
   font-size: 16px;
   color: #fff;
-  padding: 0 8px;
+  padding: 8px;
 }
 #app>header .right a.router-link-active{
   color: #fff;

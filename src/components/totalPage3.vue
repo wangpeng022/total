@@ -350,7 +350,7 @@ export default {
     }
   },
   mounted() {
-    var bigHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 20;
+    var bigHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 70;
     this.tabHeight = bigHeight;
   }
 };

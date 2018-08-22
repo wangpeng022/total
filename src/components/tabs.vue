@@ -59,7 +59,7 @@ export default {
     getBuildingList() {
       this.$axios
         .post(
-          publicu + "unifier/FNCenterBuildingListService",
+          publicu + "unifier/FNCenterBuildingTreeService",
           qs.stringify({ jsonString: "{}" })
         )
         .then(res => {
@@ -74,7 +74,7 @@ export default {
     }
   },
   mounted() {
-    // this.getBuildingList();
+    this.getBuildingList();
   },
   components: {
     totalPage1,

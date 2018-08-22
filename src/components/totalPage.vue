@@ -353,7 +353,7 @@ export default {
   mounted() {
     this.sessionId = this.getCookie('admin');
     console.log(this.sessionId);
-    let bigHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 20;
+    let bigHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 70;
     this.tabHeight = bigHeight;
   }
 };

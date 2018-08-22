@@ -2,7 +2,9 @@
     <div class="details">
         <header>
             <!-- 项目： {{this.projectName}} -->
-            <p>项目：长春金街</p>
+            <span>项目：长春金街</span>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <Button class="back" icon="arrow-return-left" style="width:60px" title="返回" @click="goBack"></Button>
         </header>
         <div class="content">
             <p>能耗使用信息：</p>
@@ -28,8 +30,8 @@
                 </div>
             </div>
             <div class="recordingBox" :class="{'h0':recordShow}">
-                <h3 style="text-align:center" @click="tableShow">充值记录&nbsp;&nbsp;<Icon type="arrow-down-b"></Icon></h3>
-                <Table class="recording" :columns="columns1" :data="data1"></Table>
+                <h3 style="text-align:center" @click="tableShow" :title="recordShow?'点击展开':'点击收起'">充值记录&nbsp;&nbsp;<Icon type="arrow-down-b"></Icon></h3>
+                <Table class="recording" :columns="columns1" :data="data1" ref='table' :height="tabHeight"></Table>
             </div>
         </div>
         <div class="cover" v-show="boxShowF">
@@ -63,6 +65,9 @@
     </div>
 </template>
 <script>
+import axios from "axios";
+import publicu from '../api.js';
+import qs from "qs";
 export default {
   name: "listDetails",
   data() {
@@ -109,39 +114,78 @@ export default {
           address: "Ottawa No. 2 Lake Park",
           date: "2016-10-04"
         }
-      ]
+      ],
+      tabHeight: "",
     };
   },
   props: ["projectName"],
   methods: {
+    getDetails() {
+      let params = {
+        tenantId,
+        pageIndex,
+        pageSize
+      };
+      axios.post(publicu+"unifier/FNCenterRechargeListService",qs.stringify({"jsonString": JSON.stringify(params)})) .then((res)=>{
+            console.log(res);
+            if (res.data.content[0]=='请先授权登录') {
+                return this.$router.push('login');
+            }
+            if(res.data.content[0]&&res.data.result){
+               this.cityList = res.data.content[0];
+               console.log(this.cityList);
+
+            }else{
+                console.log(1111);
+
+            }
+          }).catch((ex)=>{
+            console.log(ex)
+          })
+    },
     boxShow(flag) {
       this.boxShowF = flag;
     },
     tableShow(){
         this.recordShow=!this.recordShow;
+    },
+    goBack(){
+      this.$router.go(-1);
     }
   },
   mounted() {
     console.log(this.$route.query);
+    let bigHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 70;
+    this.tabHeight = bigHeight;
   }
 };
 </script>
 <style lang="less">
 .details {
   padding: 20px;
-  header p {
-    font-size: 16px;
+  header {
+    p{
+      font-size: 16px;
+    }
+    .back i{
+      font-size: 18px;
+    }
   }
 }
 .details .content {
   margin-top: 60px;
   padding: 10px;
   border: 1px solid #CFCFCF;
+  border-radius: 4px;
   transition: all .8s linear;
   .card {
     margin: 10px;
     padding: 10px 10px 0;
     border: 1px solid #CFCFCF;
+    border-radius: 4px;
+    &:hover{
+        box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.2);
+      }
     .center {
       display: flex;
       flex-direction: column;
@@ -164,19 +208,29 @@ export default {
           &:nth-last-child(1) {
             border-right: none;
           }
-          &.play span {
-            color: #7dc5fa;
+          &.play span{
+            display: inline-block;
+            color: #57A3F3;
             cursor: pointer;
+            &:hover{
+              background: #F0F0F0;
+            }
+            &:active{
+              position: relative;
+              top: 1px;
+            }
           }
         }
       }
     }
   }
   .recordingBox{
-      margin: 10px;
+      margin: 20px 10px 10px;
       padding: 10px;
-      height: 400px;
+      // height: 400px;
+      height: 555px;
       border: 1px solid #cfcfcf;
+      border-radius: 4px;
       transition: height .5s ;
       overflow: hidden;
       h3{
@@ -184,6 +238,9 @@ export default {
           i{
               transition: transform .5s ;
           }
+      }
+      &:hover{
+        box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.2);
       }
   }
   .recordingBox.h0{
