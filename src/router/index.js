@@ -32,6 +32,9 @@ export default new Router({
       path: '/home',
       name:'home',
       component: home,
+      meta: {
+        keepAlive: true // 需要被缓存
+      },
       beforeEnter: (to, from, next) => {
         if (getCookie("admin")) {
             next();
@@ -45,6 +48,9 @@ export default new Router({
       name:'listDetails',
       component: listDetails,
       props: true,
+      meta: {
+        keepAlive: true // 需要被缓存
+      },
       beforeEnter: (to, from, next) => {
         if (getCookie("admin")) {
             next();

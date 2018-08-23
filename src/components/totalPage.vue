@@ -72,6 +72,11 @@
     <br/>
     <Table ref="table" :height="tabHeight" :columns="columns1" :data="data1"></Table>
     <Table :style="style1" ref="tablePrint" width="1096" :height="tabHeight" :columns="columns1" :data="data1"></Table>
+    <div style="margin: 10px;overflow: hidden">
+      <div style="float: right;">
+        <Page :total="pageTotal" size="small" show-elevator show-sizer @on-change="changePage" :page-size='pageSize' :page-size-opts='[50,100,150]' :current='pageIndex'></Page>
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -158,7 +163,10 @@ export default {
       },
       timeList: [],
       fileID: "",
-      sessionId: ''
+      sessionId: '',
+      pageTotal: 200, //分页总条数
+      pageIndex: 1,
+      pageSize: 50
     };
   },
   props: ["projectList"],
@@ -256,7 +264,9 @@ export default {
         timeTo: dayjs(this.timeList[1])
           .add(1, "day")
           .format("YYYY-MM-DD HH:mm:ss"),
-        isDownload: isDownload
+        isDownload: isDownload,
+        pageIndex: this.pageIndex,
+        pageSize: this.pageSize
       };
       return param;
     },
@@ -348,12 +358,18 @@ export default {
     },
     dropShow(){
       // this.$refs.drop.$children[1].$el.style.display='block';
+    },
+    //分页事件
+    changePage(page){
+      console.log(page);
+      this.pageIndex = page;
+      this.queryList();
     }
   },
   mounted() {
     this.sessionId = this.getCookie('admin');
     console.log(this.sessionId);
-    let bigHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 70;
+    let bigHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 120;
     this.tabHeight = bigHeight;
   }
 };

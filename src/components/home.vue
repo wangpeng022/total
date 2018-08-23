@@ -20,22 +20,22 @@
         </Select>
         &nbsp;
         能源类型：
-        <Select v-model="engeryType" style="width: 150px" placeholder="电">
-                    <Option v-for="item in engeryTypeList" :value="item.name" :key="item.value"></Option>
+        <Select v-model="engeryType" style="width: 150px" placeholder="请输入">
+                    <Option v-for="item in engeryTypeList" :value="item.name" :key="item.id"></Option>
                 </Select>
                 &nbsp;
                 <Button @click="getData">查询</Button>
                 <Input icon="ios-search" style="width:250px;float:right" placeholder="请输入租户名称或编号"></Input>
         <br/><br/>
 
-        <Table :columns="columns8" stripe :data="data7" :height="tabHeight" size="small" ref="table" @on-row-click='rowDetails'></Table>
+        <Table :columns="columns8" stripe :data="data7" :height="tabHeight" size="small" ref="table" :loading='tableLoading' @on-row-click='rowDetails'></Table>
         <div style="margin: 10px;overflow: hidden">
-        <div style="float: right;">
-            <Page :total="100" :current="1" @on-change="changePage"></Page>
+          <div style="float: right;">
+            <Page :total="400" size="small" show-elevator show-sizer @on-change="changePage"></Page>
+          </div>
+          <!-- <Button type="primary" size="large" @click="exportData(1)"><Icon type="ios-download-outline"></Icon> 原始数据下载</Button>
+          <Button type="primary" size="large" @click="exportData(2)"><Icon type="ios-download-outline"></Icon> 排序后的数据下载</Button> -->
         </div>
-        <!-- <Button type="primary" size="large" @click="exportData(1)"><Icon type="ios-download-outline"></Icon> 原始数据下载</Button>
-        <Button type="primary" size="large" @click="exportData(2)"><Icon type="ios-download-outline"></Icon> 排序后的数据下载</Button> -->
-    </div>
     </div>
 </template>
 <script>
@@ -48,50 +48,18 @@ export default {
   data() {
     return {
       cityList: [
-        {
-          name: "万达",
-          id: "万达"
-        },
-        {
-          name: "龙湖",
-          id: "龙湖"
-        },
-        {
-          name: "万科",
-          id: "万科"
-        },
-        {
-          name: "恒大",
-          id: "恒大"
-        },
-        {
-          name: "首开",
-          id: "首开"
-        },
-        {
-          name: "新城国际",
-          id: "新城国际"
-        }
+        {id: "4101020001", name: "万达0号", costPrice: 1.2},
+        {id: "万达一号", name: "万达一号", costPrice: 1.2},
+        {id: "万达一号", name: "万达san号", costPrice: 1.2},
+        {id: "万达一号", name: "万达si", costPrice: 1.2},
+        {id: "万达一号", name: "万达五", costPrice: 1.2},
+        {id: "万达一号", name: "万达6", costPrice: 1.2}
       ],
       cityListSearch: [],
-      engeryType: "电", //参数3 能源类型
+      engeryType: "", //参数3 能源类型
       engeryTypeList: [
-        {
-          value: "Dian",
-          name: "电"
-        },
-        {
-          value: "Shui",
-          name: "水"
-        },
-        {
-          value: "ReShui",
-          name: "热水"
-        },
-        {
-          value: "RanQi",
-          name: "燃气"
-        }
+        {name: "电预付费", id: "Dian_0"},
+        {name: "电后付费", id: "Dian_1"}
       ],
       model1: "", //参数1 项目
       search2long: 0,
@@ -109,33 +77,53 @@ export default {
       ],
       columns8: [
         {
-          title: "租户名称",
-          key: "tenantName"
-          // width: 150
-        },
-        {
           title: "租户编号",
           key: "tenantId",
           // width: 150,
           sortable: true
         },
         {
+          title: "租户名称",
+          key: "tenantName"
+          // width: 150
+        },
+        {
+          title: "租户全码",
+          key: "tenantFlag",
+          // width: 150,
+          sortable: true
+        },
+        {
           title: "房间编号",
-          key: "roomIds",
+          key: "roomCodes",
           // width: 150,
           sortable: true
         },
         {
-          title: "剩余金额",
-          key: "remainMoney",
+          title: "所属建筑",
+          key: "buildingName",
           // width: 150,
           sortable: true
         },
         {
-          title: "剩余能源",
+          title: "剩余电量(kWh)",
           key: "remainData",
           // width: 150,
-          sortable: true
+          sortable: true,
+          render:(h,params) => {
+            return h("div",params.row.remainData?params.row.remainData.toFixed(2):''
+            )
+          }
+        },
+        {
+          title: "剩余金额(元)",
+          key: "remainMoney",
+          // width: 150,
+          sortable: true,
+          render:(h,params) => {
+            return h("div",params.row.remainMoney?params.row.remainMoney.toFixed(2):''
+            )
+          }
         },
         {
           title: "剩余天数",
@@ -168,7 +156,8 @@ export default {
           remiandays: 275
         }
       ],
-      tabHeight: ""
+      tabHeight: "",
+      tableLoading: false,
     };
   },
   methods: {
@@ -203,11 +192,11 @@ export default {
     },
     clear(i) {
       if (this.serText) {
-        this.serText = ""
+        this.serText = "";
         this.$refs.serKey.focus();
-        return
       }
       this.searchS(i);
+
     },
     pySearch() {
       this.cityListSearch = [];
@@ -233,7 +222,7 @@ export default {
     },
     //单击行跳转到详情
     rowDetails(a, b) {
-      // console.log(a,b);
+      console.log(a,b);
       this.$router.push({ path: `/listDetails/${a.name}`, query: a });
     },
     //初始化时获取项目列表
@@ -243,15 +232,15 @@ export default {
           qs.stringify({ jsonString: JSON.stringify({}) })
         )
         .then(res => {
-          console.log(res);
+          // console.log(res);
           // if (res.data.content[0] == "请先授权登录") {
           //   return this.$router.push("login");
           // }
           if (res.data.content[0] && res.data.result) {
             this.cityList = res.data.content[0];
-            console.log(this.cityList);
+            // console.log(this.cityList);
           } else {
-            console.log(1111);
+            // console.log(1111);
           }
         })
         .catch(ex => {
@@ -265,13 +254,15 @@ export default {
           qs.stringify({ jsonString: JSON.stringify({}) })
         )
         .then(res => {
-          console.log(res);
+          // console.log(res);
           // if (res.data.content[0] == "请先授权登录") {
           //   return this.$router.push("login");
           // }
           if (res.data.content[0] && res.data.result) {
-            // this.cityList = res.data.content[0];
-            // console.log(this.cityList);
+            // console.log(3333);
+
+            this.engeryTypeList = res.data.content[0];
+            // console.log(this.engeryTypeList);
           } else {
             console.log(1111);
           }
@@ -291,28 +282,31 @@ export default {
         status: this.activeList.filter(cur => cur.name == this.model2)[0].value,
         energyTypeId: this.engeryTypeList.filter(
           item => item["name"] == this.engeryType
-        )[0].value,
+        )[0].id,
         // keyword: "",
-        pageIndex: 1,
+        pageIndex: 4,
         pageSize: 100
       };
+      this.tableLoading = true;
       axios.post(
           publicu + "unifier/FNCenterTenantListService",
           qs.stringify({ jsonString: JSON.stringify(params) })
         )
         .then(res => {
-          console.log(res);
+          // console.log(res);
           if (res.data.content[0] == "请先授权登录") {
             // return this.$router.push('login');
           }
           if (res.data.content[0] && res.data.result) {
-            console.log(222);
+            this.data7 = res.data.content[0];
+            this.tableLoading = false;
           } else {
             console.log(1111);
           }
         })
         .catch(ex => {
           console.log(ex);
+          this.tableLoading = false;
         });
     }
   },

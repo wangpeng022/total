@@ -59,6 +59,11 @@
     <br/>
     <Table ref="table" :height="tabHeight" :columns="columns1" :data="data1"></Table>
     <Table :style="style1" ref="tablePrint" width="1096" :height="tabHeight" :columns="columns1" :data="data1"></Table>
+    <div style="margin: 10px;overflow: hidden">
+      <div style="float: right;">
+        <Page :total="pageTotal" size="small" show-elevator show-sizer @on-change="changePage" :page-size='pageSize' :page-size-opts='[50,100,150]' :current='pageIndex'></Page>
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -132,12 +137,15 @@ export default {
           name: "燃气"
         }
       ],
-      tabHeight: 800,
+      tabHeight: 676,
       style1: {
         display: "none"
       },
       timeList: [],
-      fileID: ""
+      fileID: "",
+      pageTotal: 200, //分页总条数
+      pageIndex: 1,
+      pageSize: 50
     };
   },
   props: ["projectList"],
@@ -306,11 +314,17 @@ export default {
     },
     dropShow(){
       // this.$refs.drop.$children[1].$el.style.display='block';
+    },
+    //分页事件
+    changePage(page){
+      console.log(page);
+      this.pageIndex = page;
+      this.queryList();
     }
   },
   mounted() {
-    var bigHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 70;
-    this.tabHeight = bigHeight;
+    // var bigHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 220;
+    // this.tabHeight = bigHeight;
   }
 };
 </script>

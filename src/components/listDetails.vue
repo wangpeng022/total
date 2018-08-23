@@ -13,14 +13,18 @@
                 <div class="center">
                     <ul class="first">
                         <li>仪表ID</li>
+                        <li>租户编号</li>
+                        <li>租户名称</li>
                         <li>剩余金额</li>
                         <li>剩余时间</li>
                         <li>操作</li>
                     </ul>
                     <ul>
-                        <li>1111</li>
-                        <li>-1090</li>
-                        <li>0~0</li>
+                        <li>{{dataList.buildingId}}</li>
+                        <li>{{dataList.roomCodes}}</li>
+                        <li>{{dataList.tenantId}}</li>
+                        <li>{{dataList.remainMoney}}</li>
+                        <li>{{dataList.remiandays}}</li>
                         <li class="play">
                             <span @click="boxShow(1)">充值</span>
                             &nbsp;&nbsp;&nbsp;&nbsp;
@@ -116,6 +120,7 @@ export default {
         }
       ],
       tabHeight: "",
+      dataList: ''
     };
   },
   props: ["projectName"],
@@ -155,6 +160,7 @@ export default {
   },
   mounted() {
     console.log(this.$route.query);
+    this.dataList = this.$route.query;
     let bigHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 70;
     this.tabHeight = bigHeight;
   }

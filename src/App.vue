@@ -14,7 +14,13 @@
         退出
       </div>
     </header>
-    <router-view/>
+    <!-- <keep-alive>
+      <router-view/>
+    </keep-alive> -->
+    <keep-alive>
+        <router-view v-if="$route.meta.keepAlive"></router-view>
+    </keep-alive>
+    <router-view v-if="!$route.meta.keepAlive"></router-view>
   </div>
 </template>
 
@@ -83,6 +89,7 @@ export default {
   line-height: 50px;
   color: #fff;
   margin-right: 30px;
+  cursor: pointer;
 }
 #app>header .right a{
   font-size: 16px;
