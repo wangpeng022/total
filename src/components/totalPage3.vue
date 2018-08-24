@@ -1,16 +1,10 @@
 <template>
   <div class="content" ref="countWrap">
     <Row>
-      <Col span="5">
+      <Col span="6">
       <DatePicker type="daterange" v-model="timeList" split-panels confirm  placeholder="请选择日期"
                   style="width: 200px"></DatePicker>
       </Col>
-      <!-- <Col span="4">
-      <Select v-model="projectName" style="width: 150px" placeholder="请选择项目类型">
-        <Option v-for="item in projectList" :value="item.name" :key="item.id">
-        </Option>
-      </Select>
-      </Col> -->
       <Col span="4">
         <Dropdown trigger="click" style="width: 130px" @on-click="selectMenu" ref="drop">
           <Button style="width: 130px" @click="dropShow">
@@ -59,11 +53,14 @@
     <br/>
     <Table  ref="table" :height="tabHeight" :columns="columns1" :row-class-name="rowClassName" :data="data1"></Table>
     <Table :style="style1" ref="tablePrint" width="1096" :height="tabHeight" :columns="columns1" :data="data1"></Table>
-    <div style="margin: 10px;overflow: hidden">
+    <!-- <div style="margin: 10px;overflow: hidden">
       <div style="float: right;">
-        <Page :total="pageTotal" size="small" show-elevator show-sizer @on-change="changePage" :page-size='pageSize' :page-size-opts='[50,100,150]' :current='pageIndex'></Page>
+        <Button @click="changePage(1)">首页</Button>
+        <Button @click="changePage(0,1)">上一页</Button>
+        <InputNumber style="width:50px" readonly :min="1" v-model="pageIndex"></InputNumber>
+        <Button @click="changePage(0,0)">下一页</Button>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 <script>
@@ -110,6 +107,7 @@ export default {
         },
 
       ],
+      dataList: [],
       data1: [],
       projectName: "",
       showList: 0,
@@ -142,7 +140,7 @@ export default {
       fileID: "",
       pageTotal: 200, //分页总条数
       pageIndex: 1,
-      pageSize: 50
+      pageSize: 50,
     };
   },
   props: ["projectList"],
@@ -173,28 +171,6 @@ export default {
         f.contentWindow.print();
       }, 1000);
     },
-    // downLoad() {
-    //   if (!this.projectName || !this.engeryType || !this.timeList[0]) {
-    //     return this.$Message.warning("选择条件");
-    //   }
-    //   const param = this.getQuery(1);
-    //   console.log(param);
-
-    //   this.getList(param)
-    //     .then(res => {
-    //       if (res.data && res.data.content) {
-    //         this.fileID = res.data.content[0].id;
-    //         console.log(res.data.content[0].id);
-    //         return res.data.content[0].id;
-    //       }
-    //     })
-    //     .then(id => {
-    //       this.downFile(id);
-    //     })
-    //     .catch(ex => {
-    //       console.log(ex);
-    //     });
-    // },
 
     // 下载
     downLoad() {
@@ -211,40 +187,43 @@ export default {
         return this.$Message.warning("选择条件");
       }
       const param = this.getQuery();
-      this.getList(param)
+      this.getList(param).then(res=>res.data)
         .then(res => {
           console.log(res);
 
-          if (res.data && res.data.content) {
-            const name = res.data.content[0].name;
-            let temp = res.data.content[0].list,temp2=[];
-            for (let i = 0; i < temp.length; i++) {
-              let cur = temp[i];
-              let item = {
-                amount: cur.amount,
-                amountCost: cur.amountCost,
-                money: cur.money,
-                name: name,
-                prepayMoney: cur.prepayMoney,
-                remainMoney: cur.remainMoney,
-                premiumMoney: cur.premiumMoney,
-                isSum: true
-              }
-              for (let j = 0; j < cur.list.length; j++) {
-                let cur2 = cur.list[j];
-                temp2.push(cur2);
-              }
-              temp2.push(item);
-            }
-            this.data1 = temp2;
-            console.log(this.data1);
-            this.amountCost = res.data.content[0].amountCost;
-            temp = null;
+          if (res.result=='success'&&res.content) {
+            this.dataList =  res.content;
+            this.data1 = [];
+            this.fixData(this.dataList);
           }
         })
         .catch(ex => {
           console.log(ex);
         });
+    },
+    // 拼数据
+    fixData(data) {
+      for (var i = 0; i < data.length; i++) {
+        var cur = data[i];
+        console.log(cur);
+        if (cur['list']) {
+          this.fixData(cur['list']);
+            var item = {
+            amount: cur.amount,
+            amountCost: cur.amountCost,
+            money: cur.money,
+            name:  cur.name+'汇总',
+            prepayMoney: cur.prepayMoney,
+            remainMoney: cur.remainMoney,
+            premiumMoney: cur.premiumMoney,
+            isSum: 1
+          }
+          this.data1.push(item);
+        }else{
+          this.data1.push(cur);
+        }
+        console.log(this.data1);
+      }
     },
     // 拼参数
     getQuery(isDownload = 0) {
@@ -263,7 +242,7 @@ export default {
         timeTo: dayjs(this.timeList[1])
           .add(1, "day")
           .format("YYYY-MM-DD HH:mm:ss"),
-        isDownload: isDownload
+        isDownload: isDownload,
       };
       return param;
     },
@@ -351,21 +330,16 @@ export default {
       // this.$refs.drop.$children[1].$el.style.display='block';
     },
     rowClassName(row,index){
-        if (row.isSum) {
+        if (row.isSum==1) {
           return 'table-sum-row'
+        }
+        if (row.isSum==2) {
+          return 'table-sum2-row'
         }
         return ''
     },
-    //分页事件
-    changePage(page){
-      console.log(page);
-      this.pageIndex = page;
-      this.queryList();
-    }
   },
   mounted() {
-    // var bigHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 120;
-    // this.tabHeight = bigHeight;
   }
 };
 </script>
@@ -379,13 +353,14 @@ export default {
   color: white;
 }
 
-/* .tButton {
-  display: inline-block;
-  float: right;
-} */
 .ivu-table .table-sum-row td{
   /* font-size: 14px; */
   font-weight: 600;
   background-color: #ececec;
+}
+.ivu-table .table-sum2-row td{
+  /* font-size: 14px; */
+  font-weight: 650;
+  background-color: #b6b3b3;
 }
 </style>

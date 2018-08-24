@@ -1,7 +1,7 @@
 <template>
   <div class="content" ref="countWrap">
     <Row>
-      <Col span="5">
+      <Col span="6">
       <DatePicker type="daterange" v-model="timeList" split-panels confirm  placeholder="请选择日期"
                   style="width: 200px"></DatePicker>
       </Col>
@@ -61,7 +61,11 @@
     <Table :style="style1" ref="tablePrint" width="1096" :height="tabHeight" :columns="columns1" :data="data1"></Table>
     <div style="margin: 10px;overflow: hidden">
       <div style="float: right;">
-        <Page :total="pageTotal" size="small" show-elevator show-sizer @on-change="changePage" :page-size='pageSize' :page-size-opts='[50,100,150]' :current='pageIndex'></Page>
+        <!-- <Page :total="pageTotal" size="small" show-elevator show-sizer @on-change="changePage" :page-size='pageSize' :page-size-opts='[50,100,150]' :current='pageIndex'></Page> -->
+        <Button @click="changePage(1)">首页</Button>
+        <Button @click="changePage(0,1)">上一页</Button>
+        <InputNumber style="width:50px" readonly :min="1" v-model="pageIndex"></InputNumber>
+        <Button @click="changePage(0,0)">下一页</Button>
       </div>
     </div>
   </div>
@@ -90,7 +94,13 @@ export default {
         },
         {
           title: "能耗类型",
-          key: "energyTypeId"
+          key: "energyTypeId",
+          render:(h,params) => {
+            return h("div", this.engeryTypeList.filter(
+              item => item["value"] == params.row.energyTypeId
+            )[0].name
+            )
+          }
         },
         {
           title: "租户名称",
@@ -149,11 +159,11 @@ export default {
     };
   },
   props: ["projectList"],
-  watch: {
-    name1(newVal, oldVal) {
-      console.log(newVal, oldVal);
-    }
-  },
+  // watch: {
+  //   name1(newVal, oldVal) {
+  //     console.log(newVal, oldVal);
+  //   }
+  // },
   methods: {
     inputhandle(e) {
       this.from.a = e.target.value;
@@ -198,7 +208,7 @@ export default {
             const name = res.data.content[0].name;
             let temp = res.data.content[0].list
             this.data1 = temp;
-            console.log(this.data1);
+            // console.log(this.data1);
 
             this.sumMoney = res.data.content[0].sumMoney;
             temp = null;
@@ -225,7 +235,9 @@ export default {
         timeTo: dayjs(this.timeList[1])
           .add(1, "day")
           .format("YYYY-MM-DD HH:mm:ss"),
-        isDownload: isDownload
+        isDownload: isDownload,
+        pageIndex: this.pageIndex,
+        pageSize: this.pageSize
       };
       return param;
     },
@@ -247,7 +259,7 @@ export default {
       })
       // this.getList(param)
         .then(res => {
-          console.log(res);
+          // console.log(res);
 
           const filename = decodeURI(
             res.headers["content-disposition"]
@@ -310,15 +322,25 @@ export default {
       selected = null;
 
       // this.$refs.drop.$children[1].$el.style.display='none';
-      console.log(this.$refs.drop.$children[1].$el);
+      // console.log(this.$refs.drop.$children[1].$el);
     },
     dropShow(){
       // this.$refs.drop.$children[1].$el.style.display='block';
     },
     //分页事件
-    changePage(page){
-      console.log(page);
-      this.pageIndex = page;
+    changePage(page,up){
+      if (page) {
+        this.pageIndex = page;
+      }else{
+        if (up) {
+          this.pageIndex-=1;
+          if (this.pageIndex<=0) {
+            return this.pageIndex+=1;
+          }
+        }else{
+          this.pageIndex+=1;
+        }
+      }
       this.queryList();
     }
   },

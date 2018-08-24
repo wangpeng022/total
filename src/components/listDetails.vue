@@ -158,9 +158,12 @@ export default {
       this.$router.go(-1);
     }
   },
+  activated () {
+    this.dataList = this.$route.query;
+  },
   mounted() {
     console.log(this.$route.query);
-    this.dataList = this.$route.query;
+    // this.dataList = this.$route.query;
     let bigHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 70;
     this.tabHeight = bigHeight;
   }

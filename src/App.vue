@@ -53,7 +53,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   width: 100%;
   height: 100%;
-  min-width: 800px;
+  min-width: 950px;
   padding-top: 50px;
 }
 #app>header{
@@ -63,7 +63,7 @@ export default {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  min-width: 800px;
+  min-width: 950px;
   height: 50px;
   background-color: #374045;
 

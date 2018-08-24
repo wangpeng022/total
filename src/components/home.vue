@@ -1,10 +1,10 @@
 <template>
     <div class='home'>
         项目：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <a class="search" :class="{'long':search2long}" >
+        <a class="search" :class="{'long':search2long}">
             <Icon class="ser" type="search" @click='searchS(1)'></Icon>
             <Icon class="close" type="close" @click='clear(0)'></Icon>
-            <input ref='serKey' class="serKey" type="text" v-model="serText" placeholder="请输入..." @input="pySearch" @blur="clear(0)">
+            <input ref='serKey' class="serKey" type="text" v-model="serText" placeholder="请输入..." @input="pySearch">
         </a>
         <div class="list" v-show="serText">
             <p v-for="(item,index) in cityListSearch" :key="index" @click="listClick">{{item}}</p>
@@ -31,7 +31,11 @@
         <Table :columns="columns8" stripe :data="data7" :height="tabHeight" size="small" ref="table" :loading='tableLoading' @on-row-click='rowDetails'></Table>
         <div style="margin: 10px;overflow: hidden">
           <div style="float: right;">
-            <Page :total="400" size="small" show-elevator show-sizer @on-change="changePage"></Page>
+            <!-- <Page :total="400" size="small" show-elevator show-sizer @on-change="changePage"></Page> -->
+            <Button @click="changePage(1)">首页</Button>
+            <Button @click="changePage(0,1)">上一页</Button>
+            <InputNumber style="width:50px" readonly :min="1" v-model="pageIndex"></InputNumber>
+            <Button @click="changePage(0,0)">下一页</Button>
           </div>
           <!-- <Button type="primary" size="large" @click="exportData(1)"><Icon type="ios-download-outline"></Icon> 原始数据下载</Button>
           <Button type="primary" size="large" @click="exportData(2)"><Icon type="ios-download-outline"></Icon> 排序后的数据下载</Button> -->
@@ -133,31 +137,22 @@ export default {
         }
       ],
       data7: [
-        {
-          tenantName: "Name1",
-          tenantId: 11,
-          tenantFlag: 7302,
-          buildingId: 5627,
-          buildingName: "www",
-          roomIds: 4254,
-          remainMoney: 1438,
-          remainData: 274,
-          remiandays: 285
-        },
-        {
-          tenantName: "Name2",
-          tenantId: 12,
-          tenantFlag: 7304,
-          buildingId: 5626,
-          buildingName: "www",
-          roomIds: 4255,
-          remainMoney: 2438,
-          remainData: 284,
-          remiandays: 275
-        }
+        // {
+        //   tenantName: "Name1",
+        //   tenantId: 11,
+        //   tenantFlag: 7302,
+        //   buildingId: 5627,
+        //   buildingName: "www",
+        //   roomIds: 4254,
+        //   remainMoney: 1438,
+        //   remainData: 274,
+        //   remiandays: 285
+        // },
       ],
       tabHeight: "",
       tableLoading: false,
+      pageIndex: 1,
+      pageSize: 50
     };
   },
   methods: {
@@ -179,9 +174,20 @@ export default {
         });
       }
     },
-    changePage() {
-      console.log("翻页");
+    //分页事件
+    changePage(page,up){
+      if (page) {
+        this.pageIndex = page;
+      }else{
+        if (up) {
+          this.pageIndex-=1;
+        }else{
+          this.pageIndex+=1;
+        }
+      }
+      this.getData();
     },
+    //模糊搜索栏 显示隐藏
     searchS(i) {
       this.search2long = i;
       if (i==1) {
@@ -190,14 +196,17 @@ export default {
         }, 500);
       }
     },
+    //模糊搜索 清空input|收起
     clear(i) {
       if (this.serText) {
         this.serText = "";
         this.$refs.serKey.focus();
+        return;
       }
       this.searchS(i);
 
     },
+    //模糊搜索
     pySearch() {
       this.cityListSearch = [];
       if (this.serText) {
@@ -207,13 +216,13 @@ export default {
             let index0 = PinyinMatch.match(cur.name, this.serText)[0];
             let index1 = PinyinMatch.match(cur.name, this.serText)[0];
             // console.log(PinyinMatch.match(cur.name, this.serText));
-
             let name = cur.name.slice(index0, index1 + 1);
             this.cityListSearch.push(cur.name);
           }
         });
       }
     },
+    //模糊搜索 下拉列表选中
     listClick(e) {
       console.log(e.target.innerText);
       this.model1 = e.target.innerText;
@@ -284,8 +293,8 @@ export default {
           item => item["name"] == this.engeryType
         )[0].id,
         // keyword: "",
-        pageIndex: 4,
-        pageSize: 100
+        pageIndex: this.pageIndex,
+        pageSize: this.pageSize
       };
       this.tableLoading = true;
       axios.post(
@@ -297,24 +306,31 @@ export default {
           if (res.data.content[0] == "请先授权登录") {
             // return this.$router.push('login');
           }
-          if (res.data.content[0] && res.data.result) {
+          if (res.data.content[0] && res.data.result=='success') {
             this.data7 = res.data.content[0];
-            this.tableLoading = false;
+
           } else {
-            console.log(1111);
+            this.$Message.warning("获取数据失败");
           }
+          this.tableLoading = false;
         })
         .catch(ex => {
           console.log(ex);
           this.tableLoading = false;
         });
-    }
+    },
+    searchBurHide(e){
+      console.log(e);
+
+    },
   },
   mounted() {
     this.getProjectList();
     this.getEnergyType();
     var bigHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 120;
     this.tabHeight = bigHeight;
+    // document.body.addEventListener('click', this.searchBurHide, false)
+
   }
 };
 </script>

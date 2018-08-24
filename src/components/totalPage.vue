@@ -1,7 +1,7 @@
 <template>
   <div class="content" ref="countWrap">
     <Row>
-      <Col span="5">
+      <Col span="6">
       <DatePicker type="daterange" v-model="timeList" split-panels confirm  placeholder="请选择日期"
                   style="width: 200px"></DatePicker>
       </Col>
@@ -54,18 +54,18 @@
     <br/>
     <Row ref="total">
       <Col span="2">汇总：</Col>
-      <Col span="2" v-text="sumMoney+'元'"></Col>
+      <Col span="3" v-text="sumMoney?sumMoney.toFixed(2):0+'元'"></Col>
       <Col span="2">微信汇总：</Col>
-      <Col span="2">
-        <span v-text="wxMoney+'元'"></span>
+      <Col span="3">
+        <span v-text="wxMoney?wxMoney.toFixed(2):0+'元'"></span>
         &nbsp;
         <span v-text="wxCount+'笔'"></span>
       </Col>
       <Col span="2">PC充值汇总：</Col>
-      <Col span="2">
-        <span v-text="sumMoney+'元'"></span>
+      <Col span="3">
+        <span v-text="pcMoney?pcMoney.toFixed(2):0+'元'"></span>
         &nbsp;
-        <span v-text="pcCount"></span>
+        <span v-text="pcCount+'笔'"></span>
       </Col>
 
     </Row>
@@ -74,7 +74,11 @@
     <Table :style="style1" ref="tablePrint" width="1096" :height="tabHeight" :columns="columns1" :data="data1"></Table>
     <div style="margin: 10px;overflow: hidden">
       <div style="float: right;">
-        <Page :total="pageTotal" size="small" show-elevator show-sizer @on-change="changePage" :page-size='pageSize' :page-size-opts='[50,100,150]' :current='pageIndex'></Page>
+        <!-- <Page :total="pageTotal" size="small" show-elevator show-sizer @on-change="changePage" :page-size='pageSize' :page-size-opts='[50,100,150]' :current='pageIndex'></Page> -->
+        <Button @click="changePage(1)">首页</Button>
+        <Button @click="changePage(0,1)">上一页</Button>
+        <InputNumber style="width:50px" readonly :min="1" v-model="pageIndex"></InputNumber>
+        <Button @click="changePage(0,0)">下一页</Button>
       </div>
     </div>
   </div>
@@ -103,7 +107,13 @@ export default {
         },
         {
           title: "能耗类型",
-          key: "energyTypeId"
+          key: "energyTypeId",
+          render:(h,params) => {
+            return h("div", this.engeryTypeList.filter(
+              item => item["value"] == params.row.energyTypeId
+            )[0].name
+            )
+          }
         },
         {
           title: "租户名称",
@@ -138,6 +148,7 @@ export default {
       wxMoney: 0,
       pcCount: 0,
       wxCount: 0,
+      pcMoney: 0,
       selectedProject: {},
       engeryTypeList: [
         {
@@ -170,11 +181,11 @@ export default {
     };
   },
   props: ["projectList"],
-  watch: {
-    name1(newVal, oldVal) {
-      console.log(newVal, oldVal);
-    }
-  },
+  // watch: {
+  //   name1(newVal, oldVal) {
+  //     console.log(newVal, oldVal);
+  //   }
+  // },
   methods: {
     inputhandle(e) {
       this.from.a = e.target.value;
@@ -226,8 +237,7 @@ export default {
       const param = this.getQuery();
       this.getList(param)
         .then(res => {
-          console.log(res);
-
+          // console.log(res);
           if (res.data && res.data.content) {
             if (res.data.content[0]=='请先授权登录') {
               this.$router.push({path:"/login"});
@@ -235,11 +245,12 @@ export default {
             }
             let temp = res.data.content[0];
             this.data1 = temp.list;
-            console.log(this.data1);
+            // console.log(this.data1);
             this.sumMoney = temp.sumMoney;
             this.wxMoney = temp.wxMoney;
             this.pcCount = temp.pcCount;
             this.wxCount = temp.wxCount;
+            this.pcMoney = temp.pcMoney;
             temp = null;
           }
         })
@@ -352,7 +363,6 @@ export default {
       this.selectedProject = selected;
       this.projectName = selected.name;
       selected = null;
-
       // this.$refs.drop.$children[1].$el.style.display='none';
       // console.log(this.$refs.drop.$children[1].$el);
     },
@@ -360,9 +370,19 @@ export default {
       // this.$refs.drop.$children[1].$el.style.display='block';
     },
     //分页事件
-    changePage(page){
-      console.log(page);
-      this.pageIndex = page;
+    changePage(page,up){
+      if (page) {
+        this.pageIndex = page;
+      }else{
+        if (up) {
+          this.pageIndex-=1;
+          if (this.pageIndex<=0) {
+            return this.pageIndex+=1;
+          }
+        }else{
+          this.pageIndex+=1;
+        }
+      }
       this.queryList();
     }
   },
