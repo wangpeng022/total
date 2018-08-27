@@ -61,6 +61,7 @@ export default {
       ],
       cityListSearch: [],
       engeryType: "", //参数3 能源类型
+      energyType: '',
       engeryTypeList: [
         {name: "电预付费", id: "Dian_0"},
         {name: "电后付费", id: "Dian_1"}
@@ -114,20 +115,20 @@ export default {
           key: "remainData",
           // width: 150,
           sortable: true,
-          render:(h,params) => {
-            return h("div",params.row.remainData?params.row.remainData.toFixed(2):''
-            )
-          }
+          // render:(h,params) => {
+          //   return h("div",params.row.remainData?params.row.remainData.toFixed(2):''
+          //   )
+          // }
         },
         {
           title: "剩余金额(元)",
           key: "remainMoney",
           // width: 150,
           sortable: true,
-          render:(h,params) => {
-            return h("div",params.row.remainMoney?params.row.remainMoney.toFixed(2):''
-            )
-          }
+          // render:(h,params) => {
+          //   return h("div",params.row.remainMoney?params.row.remainMoney.toFixed(2):''
+          //   )
+          // }
         },
         {
           title: "剩余天数",
@@ -232,7 +233,7 @@ export default {
     //单击行跳转到详情
     rowDetails(a, b) {
       console.log(a,b);
-      this.$router.push({ path: `/listDetails/${a.name}`, query: a });
+      this.$router.push({ path: `/listDetails/${a.name}`, query: a});
     },
     //初始化时获取项目列表
     getProjectList() {
@@ -286,16 +287,21 @@ export default {
         return this.$Message.warning("选择条件");
       }
       // 6个参数 keyword非必须
+      this.energyType = this.engeryTypeList.filter(
+          item => item["name"] == this.engeryType
+        )[0].id;
+        console.log(this.energyType);
+
+      this.$store.commit('setenergyType',this.energyType);
       let params = {
         buildingId: this.cityList.filter(cur => cur.name == this.model1)[0].id,
         status: this.activeList.filter(cur => cur.name == this.model2)[0].value,
-        energyTypeId: this.engeryTypeList.filter(
-          item => item["name"] == this.engeryType
-        )[0].id,
+        energyType: this.energyType,
         // keyword: "",
         pageIndex: this.pageIndex,
         pageSize: this.pageSize
       };
+
       this.tableLoading = true;
       axios.post(
           publicu + "unifier/FNCenterTenantListService",

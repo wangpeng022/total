@@ -57,7 +57,7 @@ export default {
   padding-top: 50px;
 }
 #app>header{
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   display: flex;
@@ -65,6 +65,7 @@ export default {
   width: 100%;
   min-width: 950px;
   height: 50px;
+  z-index: 5;
   background-color: #374045;
 
 }
@@ -110,7 +111,7 @@ body{
     /* user-select: none; */
     width: 100%;
     height: 100vh;
-    overflow: hidden;
+    /* overflow: hidden; */
     font-size: 14px;
 }
 

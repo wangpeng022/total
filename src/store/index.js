@@ -9,6 +9,7 @@ export default new vuex.Store({
       message:'sdsdsds'
     },
     userID:'',
+    energyType: ''
   },
   mutations:{
     setUserid(state,userid){
@@ -16,7 +17,10 @@ export default new vuex.Store({
     },
     updateMessage(state,payload){
       state.obj.message=payload
-    }
+    },
+    setenergyType(state,energyType){
+      state.energyType=energyType;
+    },
   },
   actions:{
 

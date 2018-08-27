@@ -5,6 +5,7 @@ import totalPage from '@/components/totalPage'
 import tabs from '@/components/tabs'
 import home from '@/components/home'
 import listDetails from '@/components/listDetails'
+import record from '@/components/record'
 import store from '../store'
 const getCookie=(c_name)=>{
   if (document.cookie.length>0){
@@ -70,6 +71,18 @@ export default new Router({
           next("login")
           }
       }
+    },
+        {
+      path: '/record',
+      name:'record',
+      component: record,
+      // beforeEnter: (to, from, next) => {
+      //   if (getCookie("admin")) {
+      //       next();
+      //   }else{
+      //     next("login")
+      //     }
+      // }
     },
 
     {

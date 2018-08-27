@@ -1,5 +1,5 @@
 <template>
-    <div class="details">
+    <div class="details" ref="details" :class="{'up': toUp&&recordShow==0}">
         <header>
             <!-- 项目： {{this.projectName}} -->
             <span>项目：长春金街</span>
@@ -8,11 +8,11 @@
         </header>
         <div class="content">
             <p>能耗使用信息：</p>
-            <div class="card">
-                <p>电-预付费-软充软扣</p>
-                <div class="center">
+            <div class="card" >
+                <p>{{buildingName}}</p>
+                <div class="center" v-for="(cur,index) in dianList" :key="index">
                     <ul class="first">
-                        <li>仪表ID</li>
+                        <!-- <li>仪表ID</li> -->
                         <li>租户编号</li>
                         <li>租户名称</li>
                         <li>剩余金额</li>
@@ -20,11 +20,11 @@
                         <li>操作</li>
                     </ul>
                     <ul>
-                        <li>{{dataList.buildingId}}</li>
-                        <li>{{dataList.roomCodes}}</li>
+                        <!-- <li>{{cur.meterId?cur.meterId:'--'}}</li> -->
                         <li>{{dataList.tenantId}}</li>
-                        <li>{{dataList.remainMoney}}</li>
-                        <li>{{dataList.remiandays}}</li>
+                        <li>{{dataList.tenantName}}</li>
+                        <li>{{cur.remainData}}</li>
+                        <li>{{cur.remainDays}}</li>
                         <li class="play">
                             <span @click="boxShow(1)">充值</span>
                             &nbsp;&nbsp;&nbsp;&nbsp;
@@ -32,11 +32,17 @@
                         </li>
                     </ul>
                 </div>
+                <div class="btn" style="">
+                  <router-link :to="{path:'/record',query:{tenantId: this.dataList.tenantId,buildingId: this.dataList.buildingId,energyTypeId: this.energyTypeId}}">充值记录</router-link>
+                </div>
             </div>
-            <div class="recordingBox" :class="{'h0':recordShow}">
+            <!-- <div class="card" >
+               热水啊，燃气啊，没有数据，不写呢先
+            </div> -->
+            <!-- <div class="recordingBox" :class="{'h0':recordShow}">
                 <h3 style="text-align:center" @click="tableShow" :title="recordShow?'点击展开':'点击收起'">充值记录&nbsp;&nbsp;<Icon type="arrow-down-b"></Icon></h3>
                 <Table class="recording" :columns="columns1" :data="data1" ref='table' :height="tabHeight"></Table>
-            </div>
+            </div> -->
         </div>
         <div class="cover" v-show="boxShowF">
             <div class="box">
@@ -72,25 +78,39 @@
 import axios from "axios";
 import publicu from '../api.js';
 import qs from "qs";
+import {mapMutations} from 'vuex'
 export default {
   name: "listDetails",
   data() {
     return {
-      boxShowF: 0,
-      recordShow: 1,
+      toUp: 1,//上移
+      boxShowF: 0,//充值框显示|隐藏
+      recordShow: 1,//充值记录显示|隐藏
       value2: 0,
       columns1: [
         {
-          title: "Name",
+          title: "充值单号",
           key: "name"
         },
         {
-          title: "Age",
+          title: "操作时间",
           key: "age"
         },
         {
-          title: "Address",
+          title: "操作人",
           key: "address"
+        },
+        {
+          title: "仪表ID",
+          key: "address"
+        },
+        {
+          title: "充值金额（元）",
+          key: "age"
+        },
+        {
+          title: "操作后剩余金额（元）",
+          key: "age"
         }
       ],
       data1: [
@@ -117,19 +137,85 @@ export default {
           age: 26,
           address: "Ottawa No. 2 Lake Park",
           date: "2016-10-04"
-        }
+        },
+        {
+          name: "Joe Black",
+          age: 30,
+          address: "Sydney No. 1 Lake Park",
+          date: "2016-10-02"
+        },
+        {
+          name: "Joe Black",
+          age: 30,
+          address: "Sydney No. 1 Lake Park",
+          date: "2016-10-02"
+        },
+        {
+          name: "Joe Black",
+          age: 30,
+          address: "Sydney No. 1 Lake Park",
+          date: "2016-10-02"
+        },
+        {
+          name: "Joe Black",
+          age: 30,
+          address: "Sydney No. 1 Lake Park",
+          date: "2016-10-02"
+        },
+        {
+          name: "Joe Black",
+          age: 30,
+          address: "Sydney No. 1 Lake Park",
+          date: "2016-10-02"
+        },
+        {
+          name: "Joe Black",
+          age: 30,
+          address: "Sydney No. 1 Lake Park",
+          date: "2016-10-02"
+        },
+        {
+          name: "Joe Black",
+          age: 30,
+          address: "Sydney No. 1 Lake Park",
+          date: "2016-10-02"
+        },
+        {
+          name: "Joe Black",
+          age: 30,
+          address: "Sydney No. 1 Lake Park",
+          date: "2016-10-02"
+        },
+        {
+          name: "Joe Black",
+          age: 30,
+          address: "Sydney No. 1 Lake Park",
+          date: "2016-10-02"
+        },
+        {
+          name: "Joe Black",
+          age: 30,
+          address: "Sydney No. 1 Lake Park",
+          date: "2016-10-02"
+        },
       ],
       tabHeight: "",
-      dataList: ''
+      dataList: '',
+      pageIndex: 1,
+      pageSize: 50,
+      dianList: [],
+      buildingName: '',
+      energyTypeId: ''
     };
   },
   props: ["projectName"],
   methods: {
+    //充值列表
     getDetails() {
       let params = {
-        tenantId,
-        pageIndex,
-        pageSize
+        tenantId: this.dataList.tenantId,
+        pageIndex: this.pageIndex,
+        pageSize: this.pageSize
       };
       axios.post(publicu+"unifier/FNCenterRechargeListService",qs.stringify({"jsonString": JSON.stringify(params)})) .then((res)=>{
             console.log(res);
@@ -151,27 +237,95 @@ export default {
     boxShow(flag) {
       this.boxShowF = flag;
     },
+    //展开充值记录
     tableShow(){
+      if(this.recordShow){
+        this.getDetails();
+      }
         this.recordShow=!this.recordShow;
     },
     goBack(){
       this.$router.go(-1);
+    },
+    // 进入页面查询meterId
+    findMeterId(){
+      var params = {
+        buildingId: this.dataList.buildingId,
+        tenantFlag: this.dataList.tenantFlag,
+      };
+      axios.post(publicu+"unifier/FNCenterTenantDetailService",qs.stringify({"jsonString": JSON.stringify(params)})) .then((res)=>{
+            console.log(res);
+            if (res.data.content[0]=='请先授权登录') {
+                // return this.$router.push('login');
+            }
+            if(res.data.content[0]&&res.data.result){
+              this.dataList = res.data.content[0];
+              this.buildingName = res.data.content[0].buildingName;
+              this.dianList = res.data.content[0].dianList
+              this.energyTypeId = this.dianList[0].energyTypeId;
+            }else{
+                console.log(1111);
+
+            }
+          }).catch((ex)=>{
+            console.log(ex)
+          })
+    },
+    // 充值前金额查询
+    beforeMoney(){
+      var params = {
+        meterId: this.dataList.meterId,
+        buildingId: this.dataList.buildingId,
+        tenantId: this.dataList.tenantId,
+        energyTypeId: this.$store.state.energyTypeId
+      };
+      axios.post(publicu+"unifier/FNCenterBeforePrePayService",qs.stringify({"jsonString": JSON.stringify(params)})) .then((res)=>{
+            console.log(res);
+            if (res.data.content[0]=='请先授权登录') {
+                // return this.$router.push('login');
+            }
+            if(res.data.content[0]&&res.data.result){
+              //  this.cityList = res.data.content[0];
+              //  console.log(this.cityList);
+            }else{
+                console.log(1111);
+            }
+          }).catch((ex)=>{
+            console.log(ex)
+          })
+    },
+    // 页面向上滚动
+    scrollUp(e){
+      console.log(upupupup)
     }
   },
   activated () {
     this.dataList = this.$route.query;
+    this.recordShow = 1;
+    // console.log(this.$store.state.energyTypeId);
+    this.findMeterId();
+    // this.$refs.table.addEventListener('scroll',()=>{
+    //   console.log(3333);
+    // });
+  },
+  deactivated(){
+    console.log(22);
+
   },
   mounted() {
     console.log(this.$route.query);
-    // this.dataList = this.$route.query;
-    let bigHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 70;
-    this.tabHeight = bigHeight;
+    // let bigHeight = window.innerHeight - this.$refs.table.$el.offsetTop + 190;
+    // this.tabHeight = bigHeight;
   }
 };
 </script>
 <style lang="less">
 .details {
   padding: 20px;
+  position: none;
+  top: 0;
+  left: 0;
+  transition: top .4s;
   header {
     p{
       font-size: 16px;
@@ -179,6 +333,10 @@ export default {
     .back i{
       font-size: 18px;
     }
+  }
+  &.up{
+    position: relative;
+    top: -300px;
   }
 }
 .details .content {
@@ -232,12 +390,20 @@ export default {
         }
       }
     }
+    .btn{
+      margin: 10px 0;
+      display: flex;
+      flex-direction: row-reverse;
+      a{
+        margin-right: 75px;
+      }
+    }
   }
   .recordingBox{
       margin: 20px 10px 10px;
       padding: 10px;
       // height: 400px;
-      height: 555px;
+      height: 700px;
       border: 1px solid #cfcfcf;
       border-radius: 4px;
       transition: height .5s ;
