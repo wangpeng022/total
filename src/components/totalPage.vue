@@ -362,6 +362,9 @@ export default {
       }
       this.selectedProject = selected;
       this.projectName = selected.name;
+      // console.log(this.$refs.drop.handleClose);
+      // this.$refs.drop.handleClose();
+
       selected = null;
       // this.$refs.drop.$children[1].$el.style.display='none';
       // console.log(this.$refs.drop.$children[1].$el);

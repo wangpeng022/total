@@ -366,6 +366,9 @@ export default {
       let params = this.data7.filter(item=>item.tenantName==name)[0];
       console.log(params);
       this.$router.push({path: '/listDetails/:id',query:params})
+    },
+    clickOut(e){
+      console.log(e);
     }
   },
   mounted() {
