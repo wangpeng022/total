@@ -22,7 +22,7 @@
         font-weight: 600;line-height:54px">郑州中原万达广场</Col>
                 <Col>2018.12.03~2019.01.02</Col>
             </Row>
-            <Col style="padding:50px 60px;">
+            <Col style="padding:50px 60px 100px;">
                 <Row style="padding:0 30px 10px">租户编号：ZHBH_1017</Row>
                 <Row style="padding:0 30px 20px;border-bottom:1px solid #D9E2E8;">能耗类型：电</Row>
                 <Row style="border-bottom:1px solid #D9E2E8;font-size:14px">
@@ -95,7 +95,7 @@ export default {
         pageSize: this.pageSize,
       };
       axios.post(publicu+"unifier/FNCenterRechargeListService",qs.stringify({"jsonString": JSON.stringify(params)})) .then((res)=>{
-            console.log(res);
+            // console.log(res);
             if (res.data.content[0]=='请先授权登录') {
                 // return this.$router.push('login');
             }

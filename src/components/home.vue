@@ -16,16 +16,21 @@
             <br/>
         状态：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <Select v-model="model2" style="width:150px" placeholder="已激活">
-                    <Option v-for="item in activeList" :value="item.name" :key="item.value"></Option>
+          <Option v-for="item in activeList" :value="item.name" :key="item.value"></Option>
         </Select>
         &nbsp;
         能源类型：
         <Select v-model="engeryType" style="width: 150px" placeholder="请输入">
-                    <Option v-for="item in engeryTypeList" :value="item.name" :key="item.id"></Option>
-                </Select>
-                &nbsp;
-                <Button @click="getData">查询</Button>
-                <Input icon="ios-search" style="width:250px;float:right" placeholder="请输入租户名称或编号"></Input>
+          <Option v-for="item in engeryTypeList" :value="item.name" :key="item.id"></Option>
+        </Select>
+          &nbsp;
+          <Button @click="getData">查询</Button>
+          <Input icon="ios-search" style="width:250px;float:right" v-model="valueRight" placeholder="请输入租户名称或编号" @on-keyup='rightSearch' @on-blur="valueRight=''"></Input>
+          <div class="rightSearchDown" v-show="valueRight">
+            <ul>
+              <li v-for="(item,index) in dataListSearch" :key="index" @mousedown="rightClickItem">{{item}}</li>
+            </ul>
+          </div>
         <br/><br/>
 
         <Table :columns="columns8" stripe :data="data7" :height="tabHeight" size="small" ref="table" :loading='tableLoading' @on-row-click='rowDetails'></Table>
@@ -34,7 +39,7 @@
             <!-- <Page :total="400" size="small" show-elevator show-sizer @on-change="changePage"></Page> -->
             <Button @click="changePage(1)">首页</Button>
             <Button @click="changePage(0,1)">上一页</Button>
-            <InputNumber style="width:50px" readonly :min="1" v-model="pageIndex"></InputNumber>
+            <InputNumber style="width:50px" readonly :min="1" v-model="pageIndex" ></InputNumber>
             <Button @click="changePage(0,0)">下一页</Button>
           </div>
           <!-- <Button type="primary" size="large" @click="exportData(1)"><Icon type="ios-download-outline"></Icon> 原始数据下载</Button>
@@ -60,6 +65,7 @@ export default {
         {id: "万达一号", name: "万达6", costPrice: 1.2}
       ],
       cityListSearch: [],
+      dataListSearch: [],
       engeryType: "", //参数3 能源类型
       energyType: '',
       engeryTypeList: [
@@ -67,6 +73,7 @@ export default {
         {name: "电后付费", id: "Dian_1"}
       ],
       model1: "", //参数1 项目
+      valueRight: '',//右侧搜索栏
       search2long: 0,
       serText: "",
       model2: "已激活", //参数2 状态
@@ -115,20 +122,20 @@ export default {
           key: "remainData",
           // width: 150,
           sortable: true,
-          // render:(h,params) => {
-          //   return h("div",params.row.remainData?params.row.remainData.toFixed(2):''
-          //   )
-          // }
+          render:(h,params) => {
+            return h("div",params.row.remainData=='--'?'':params.row.remainData.toFixed(2)
+            )
+          }
         },
         {
           title: "剩余金额(元)",
           key: "remainMoney",
           // width: 150,
           sortable: true,
-          // render:(h,params) => {
-          //   return h("div",params.row.remainMoney?params.row.remainMoney.toFixed(2):''
-          //   )
-          // }
+          render:(h,params) => {
+            return h("div",params.row.remainMoney=='--'?'':params.row.remainMoney.toFixed(2)
+            )
+          }
         },
         {
           title: "剩余天数",
@@ -225,7 +232,7 @@ export default {
     },
     //模糊搜索 下拉列表选中
     listClick(e) {
-      console.log(e.target.innerText);
+      // console.log(e.target.innerText);
       this.model1 = e.target.innerText;
       this.serText = "";
       this.search2long = 0;
@@ -290,17 +297,18 @@ export default {
       this.energyType = this.engeryTypeList.filter(
           item => item["name"] == this.engeryType
         )[0].id;
-        console.log(this.energyType);
-
       this.$store.commit('setenergyType',this.energyType);
       let params = {
         buildingId: this.cityList.filter(cur => cur.name == this.model1)[0].id,
         status: this.activeList.filter(cur => cur.name == this.model2)[0].value,
         energyType: this.energyType,
-        // keyword: "",
+        // keyword: this.valueRight,
         pageIndex: this.pageIndex,
         pageSize: this.pageSize
       };
+      if (this.valueRight) {
+        params.keyword = this.valueRight;
+      }
 
       this.tableLoading = true;
       axios.post(
@@ -327,8 +335,38 @@ export default {
     },
     searchBurHide(e){
       console.log(e);
-
     },
+    //模糊搜索右
+    rightSearch() {
+      // 1.调取后台查询接口 太慢
+      // if (this.valueRight) {
+      //   this.getData();
+      // }else{
+      //   this.$Message.warning("请输入条件");
+      // }
+
+      // 2。在本地获取的列表内模糊搜索
+      if (this.valueRight) {
+          this.dataListSearch = [];
+          this.data7.forEach((cur, index) => {
+          let mat = PinyinMatch.match(cur.tenantName, this.valueRight);
+          if (mat) {
+            let index0 = PinyinMatch.match(cur.tenantName, this.valueRight)[0];
+            let index1 = PinyinMatch.match(cur.tenantName, this.valueRight)[0];
+            // console.log(PinyinMatch.match(cur.tenantName, this.valueRight));
+            let tenantName = cur.tenantName.slice(index0, index1 + 1);
+            this.dataListSearch.push(cur.tenantName);
+          }
+        });
+      }
+    },
+    // 右侧搜索结果列表选中
+    rightClickItem(e){
+      let name = e.target.innerText;
+      let params = this.data7.filter(item=>item.tenantName==name)[0];
+      console.log(params);
+      this.$router.push({path: '/listDetails/:id',query:params})
+    }
   },
   mounted() {
     this.getProjectList();
@@ -412,6 +450,27 @@ export default {
   padding-left: 30px;
 }
 .home .list p:hover {
+  background: #57a3f3;
+}
+.home .rightSearchDown{
+  position: absolute;
+  top: 100px;
+  right: 10px;
+  width: 250px;
+  min-height: 100px;
+  max-height: 400px;
+  overflow: auto;
+  border-radius: 4px;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+  padding: 5px;
+  z-index: 10;
+  background: #fff;
+  border: 1px solid #dddee1;
+}
+.home .rightSearchDown li{
+  padding-left: 10px;
+}
+.home .rightSearchDown li:hover{
   background: #57a3f3;
 }
 </style>

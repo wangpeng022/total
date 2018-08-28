@@ -59,7 +59,7 @@
           this.returntext = "密码不能为空"
         }else{
           axios.post(publicu+"unifier/FNCenterLoginService",qs.stringify({"jsonString": JSON.stringify({userId:this.username,password:this.password})})) .then((res)=>{
-            console.log(res);
+            // console.log(res);
             if(res.data.content[0]&&res.data.content[0].result){
               this.sessionId = res.data.content[0].sessionId;
               setCookie('sessionId',this.sessionId);

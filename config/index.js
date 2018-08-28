@@ -12,7 +12,7 @@ module.exports = {
     proxyTable: {
       '/api': {
         //201
-        target: 'http://192.168.100.201:8080/EMS_Finein_Center/Spring/MVC/entrance/', // 数据接口
+        target: 'http://192.168.100.105:5555/EMS_Finein_Center/Spring/MVC/entrance/', // 数据接口
         changeOrigin: true, // 跨域
         secure: false,
         pathRewrite: {

@@ -12,7 +12,7 @@
                 <p>{{buildingName}}</p>
                 <div class="center" v-for="(cur,index) in dianList" :key="index">
                     <ul class="first">
-                        <!-- <li>仪表ID</li> -->
+                        <li>仪表ID</li>
                         <li>租户编号</li>
                         <li>租户名称</li>
                         <li>剩余金额</li>
@@ -20,7 +20,7 @@
                         <li>操作</li>
                     </ul>
                     <ul>
-                        <!-- <li>{{cur.meterId?cur.meterId:'--'}}</li> -->
+                        <li>{{cur.meterId?cur.meterId:'--'}}</li>
                         <li>{{dataList.tenantId}}</li>
                         <li>{{dataList.tenantName}}</li>
                         <li>{{cur.remainData}}</li>
@@ -50,16 +50,16 @@
                 <h3>充 值</h3>
                 <div class="boxContent">
                     <P>
-                        用户ID：<span> 44332121</span>
+                        仪表ID：<span> {{curParams.meterId}}</span>
                     </P>
-                    <p>
-                        全码： <span>01020203203203023020320</span>
-                    </p>
+                    <P>
+                        剩余金额<span>  {{curParams.remainData?curParams.remainData:'--'}}元</span>
+                    </P>
+                    <P>
+                        用户ID：<span> {{curParams.tenantId}}</span>
+                    </P>
                     <span>充值金额：</span>
                     <InputNumber :max="99999" :min="1" :step="1" v-model="value2"></InputNumber> 元
-                    <p>
-                        仪表id: <span>339493478347</span>
-                    </p>
                     <p>
                         租户名称：<span>北京XXX有限公司</span>
                     </p>
@@ -67,7 +67,7 @@
                         能耗类型：<span>预付费</span>
                     </p>
                 </div>
-                <Button type="primary" id="payBtn">充 值</Button>
+                <Button type="primary" id="payBtn" @click="Recharge">充 值</Button>
 
 
             </div>
@@ -205,7 +205,8 @@ export default {
       pageSize: 50,
       dianList: [],
       buildingName: '',
-      energyTypeId: ''
+      energyTypeId: '',
+      curParams: {}
     };
   },
   props: ["projectName"],
@@ -218,7 +219,7 @@ export default {
         pageSize: this.pageSize
       };
       axios.post(publicu+"unifier/FNCenterRechargeListService",qs.stringify({"jsonString": JSON.stringify(params)})) .then((res)=>{
-            console.log(res);
+            // console.log(res);
             if (res.data.content[0]=='请先授权登录') {
                 return this.$router.push('login');
             }
@@ -236,14 +237,17 @@ export default {
     },
     boxShow(flag) {
       this.boxShowF = flag;
+      if (flag==1) {
+        this.beforeMoney();
+      }
     },
     //展开充值记录
-    tableShow(){
-      if(this.recordShow){
-        this.getDetails();
-      }
-        this.recordShow=!this.recordShow;
-    },
+    // tableShow(){
+    //   if(this.recordShow){
+    //     this.getDetails();
+    //   }
+    //     this.recordShow=!this.recordShow;
+    // },
     goBack(){
       this.$router.go(-1);
     },
@@ -254,7 +258,7 @@ export default {
         tenantFlag: this.dataList.tenantFlag,
       };
       axios.post(publicu+"unifier/FNCenterTenantDetailService",qs.stringify({"jsonString": JSON.stringify(params)})) .then((res)=>{
-            console.log(res);
+            // console.log(res);
             if (res.data.content[0]=='请先授权登录') {
                 // return this.$router.push('login');
             }
@@ -263,9 +267,13 @@ export default {
               this.buildingName = res.data.content[0].buildingName;
               this.dianList = res.data.content[0].dianList
               this.energyTypeId = this.dianList[0].energyTypeId;
+
+              this.curParams.meterId = this.dianList[0].meterId,
+              this.curParams.buildingName = res.data.content[0].buildingName;
+              this.curParams.tenantId = this.dataList.tenantId,
+              this.curParams.energyTypeId = this.dianList[0].energyTypeId;
             }else{
                 console.log(1111);
-
             }
           }).catch((ex)=>{
             console.log(ex)
@@ -273,20 +281,21 @@ export default {
     },
     // 充值前金额查询
     beforeMoney(){
+      console.log(this.dataList,111111111);
       var params = {
-        meterId: this.dataList.meterId,
+        meterId: this.dianList[0].meterId,
         buildingId: this.dataList.buildingId,
         tenantId: this.dataList.tenantId,
-        energyTypeId: this.$store.state.energyTypeId
+        energyTypeId: this.energyTypeId
       };
       axios.post(publicu+"unifier/FNCenterBeforePrePayService",qs.stringify({"jsonString": JSON.stringify(params)})) .then((res)=>{
-            console.log(res);
+            // console.log(res);
             if (res.data.content[0]=='请先授权登录') {
                 // return this.$router.push('login');
             }
             if(res.data.content[0]&&res.data.result){
-              //  this.cityList = res.data.content[0];
-              //  console.log(this.cityList);
+              this.curParams.remainData = res.data.content[0].remainData;
+              this.dianList[0].remainData = this.curParams.remainData;
             }else{
                 console.log(1111);
             }
@@ -294,9 +303,35 @@ export default {
             console.log(ex)
           })
     },
-    // 页面向上滚动
-    scrollUp(e){
-      console.log(upupupup)
+    // 充值
+    Recharge(){
+      if (!this.value2) {
+        return this.$Message.warning('请输入金额')
+      }
+      console.log(this.curParams);
+
+      var params = {
+        tenantId: this.curParams.tenantId,
+        buildingId: this.dataList.buildingId,
+        meterId: this.curParams.meterId,
+        energyTypeId: this.energyTypeId,
+        money: this.value2
+      };
+      axios.post(publicu+"unifier/FNCenterRechargeService",qs.stringify({"jsonString": JSON.stringify(params)})) .then((res)=>{
+            console.log(res);
+            if (res.data.content[0]=='请先授权登录') {
+                // return this.$router.push('login');
+            }
+            if(res.data.content[0]&&res.data.result=='success'){
+              this.$Message.success('充值成功');
+              this.boxShowF = 0;
+            }else{
+                this.$Message.failed('充值失败');
+                this.boxShowF = 0;
+            }
+          }).catch((ex)=>{
+            console.log(ex)
+          })
     }
   },
   activated () {
