@@ -189,6 +189,9 @@ export default {
       }else{
         if (up) {
           this.pageIndex-=1;
+          if (this.pageIndex<=0) {
+            return this.pageIndex+=1;
+          }
         }else{
           this.pageIndex+=1;
         }

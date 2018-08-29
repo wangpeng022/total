@@ -33,7 +33,7 @@
                     </ul>
                 </div>
                 <div class="btn" style="">
-                  <router-link :to="{path:'/record',query:{tenantId: this.dataList.tenantId,buildingId: this.dataList.buildingId,energyTypeId: this.energyTypeId}}">充值记录</router-link>
+                  <router-link :to="{path:'/record',query:{tenantId: this.dataList.tenantId,buildingId: this.dataList.buildingId,energyTypeId: this.energyTypeId,tenantName:this.dataList.tenantName}}">充值记录</router-link>
                 </div>
             </div>
             <!-- <div class="card" >
@@ -325,6 +325,7 @@ export default {
             if(res.data.content[0]&&res.data.result=='success'){
               this.$Message.success('充值成功');
               this.boxShowF = 0;
+              this.value2 = '';
             }else{
                 this.$Message.failed('充值失败');
                 this.boxShowF = 0;

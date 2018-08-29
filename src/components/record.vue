@@ -17,10 +17,10 @@
         <br/>
         <Col style="margin:10px 140px;border:1px solid #D9E2E8;">
             <Row style="padding:50px 60px;background:#E3E7EE">
-                <Col span="16" style="font-size: 36px;font-weight: 900;">预付费-充钱-1017充值记录</Col>
+                <Col span="16" style="font-size: 36px;font-weight: 900;">{{tenantName}}</Col>
                 <Col span="6" style="float:right;font-size: 18px;
         font-weight: 600;line-height:54px">郑州中原万达广场</Col>
-                <Col>2018.12.03~2019.01.02</Col>
+                <div style="position: absolute;top:110px;left:70px">{{timeList[0]|time1}}~{{timeList[1]|time1}}</div>
             </Row>
             <Col style="padding:50px 60px 100px;">
                 <Row style="padding:0 30px 10px">租户编号：ZHBH_1017</Row>
@@ -71,8 +71,16 @@ export default {
         pageSize: 50,
         timeList: [],
         buildingId: '',
+        tenantName: ''
 
     };
+  },
+  filters: {
+      time1(value){
+          if (value) {
+              return dayjs(value).format("YYYY-MM-DD")
+          }
+      }
   },
   methods: {
     goBack() {
@@ -114,6 +122,7 @@ export default {
       this.tenantId = this.$route.query.tenantId;
       this.buildingId = this.$route.query.buildingId;
       this.energyTypeId = this.$route.query.energyTypeId;
+      this.tenantName = this.$route.query.tenantName;
       console.log(this.$route.query,11111);
   },
 };
