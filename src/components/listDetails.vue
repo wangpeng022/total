@@ -263,6 +263,8 @@ export default {
                 // return this.$router.push('login');
             }
             if(res.data.content[0]&&res.data.result){
+              console.log(res.data.content[0],1111111);
+
               this.dataList = res.data.content[0];
               this.buildingName = res.data.content[0].buildingName;
               this.dianList = res.data.content[0].dianList

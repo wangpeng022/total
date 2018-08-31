@@ -1,21 +1,21 @@
 <template>
     <div class='home'>
-        项目：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <a class="search" :class="{'long':search2long}">
+        项目：
+        <div class="search" :class="{'long':search2long}">
             <Icon class="ser" type="search" @click='searchS(1)'></Icon>
             <Icon class="close" type="close" @click='clear(0)'></Icon>
             <input ref='serKey' class="serKey" type="text" v-model="serText" placeholder="请输入..." @input="pySearch">
-        </a>
+        </div>
         <div class="list" v-show="serText">
             <p v-for="(item,index) in cityListSearch" :key="index" @click="listClick">{{item}}</p>
         </div>
-        <Select v-model="model1" style="width:150px">
+        <Select v-model="model1" style="width:150px;margin-left: 50px">
             <Option v-for="(item,index) in cityList" :value="item.name" :key="index">{{ item.name }}</Option>
         </Select>
             <br/>
             <br/>
-        状态：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <Select v-model="model2" style="width:150px" placeholder="已激活">
+        状态：
+        <Select v-model="model2" style="width:150px;margin-left: 50px" placeholder="已激活">
           <Option v-for="item in activeList" :value="item.name" :key="item.value"></Option>
         </Select>
         &nbsp;
@@ -402,7 +402,7 @@ export default {
   border-radius: 17px;
   /* text-align: center; */
   line-height: 34px;
-  z-index: 15;
+  z-index: 4;
   background: #fff;
   transition: width 0.5s;
   overflow: hidden;
