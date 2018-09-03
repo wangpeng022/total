@@ -77,7 +77,7 @@
                         用 户 I D：<span> {{curParams.tenantId}}</span>
                     </P>
                     <span>充值金额：</span>
-                    <InputNumber :max="99999" :min="1" :step="1" v-model="value2"></InputNumber> 元
+                    <InputNumber :max="1000000" :step="1" v-model="value2"></InputNumber> 元
                     <p>
                         租户名称：<span>{{dataList.tenantName}}</span>
                     </p>
@@ -244,8 +244,8 @@ export default {
     },
     // 充值
     Recharge(){
-      if (!this.value2) {
-        return this.$Message.warning('请输入金额')
+      if (this.value2<=0) {
+        return this.$Message.warning('请输入正确金额')
       }
       console.log(this.curParams);
 

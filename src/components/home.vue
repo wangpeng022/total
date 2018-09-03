@@ -92,31 +92,31 @@ export default {
           title: "租户编号",
           key: "tenantId",
           // width: 150,
-          sortable: true
+          // sortable: true
         },
         {
           title: "租户名称",
           key: "tenantName",
           // width: 150,
-          sortable: true
+          // sortable: true
         },
         {
           title: "租户全码",
           key: "tenantFlag",
           // width: 150,
-          sortable: true
+          // sortable: true
         },
         {
           title: "房间编号",
           key: "roomCodes",
           // width: 150,
-          sortable: true
+          // sortable: true
         },
         {
           title: "所属建筑",
           key: "buildingName",
           // width: 150,
-          sortable: true
+          // sortable: true
         },
         {
           title: "剩余电量(kWh)",
