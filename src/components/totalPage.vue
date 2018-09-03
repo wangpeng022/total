@@ -239,6 +239,8 @@ export default {
         .then(res => {
           // console.log(res);
           if (res.data && res.data.content) {
+            console.log(res.data);
+
             if (res.data.content[0]=='请先授权登录') {
               this.$router.push({path:"/login"});
               return this.$Message.warning("请先授权登录");

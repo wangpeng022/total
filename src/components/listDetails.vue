@@ -2,7 +2,7 @@
     <div class="details" ref="details" :class="{'up': toUp&&recordShow==0}">
         <header>
             <!-- 项目： {{this.projectName}} -->
-            <span>项目：长春金街</span>
+            <span>项目：<span>{{buildingName}}</span></span>
             &nbsp;&nbsp;&nbsp;&nbsp;
             <Button class="back" icon="arrow-return-left" style="width:60px" title="返回" @click="goBack"></Button>
         </header>
@@ -10,7 +10,7 @@
             <p>能耗使用信息：</p>
             <div class="card" >
                 <p>{{buildingName}}</p>
-                <div class="center" v-for="(cur,index) in dianList" :key="index">
+                <div class="center" v-if="dianList" v-for="(cur,index) in dianList" :key="index">
                     <ul class="first">
                         <li>仪表ID</li>
                         <li>租户编号</li>
@@ -23,13 +23,31 @@
                         <li>{{cur.meterId?cur.meterId:'--'}}</li>
                         <li>{{dataList.tenantId}}</li>
                         <li>{{dataList.tenantName}}</li>
-                        <li>{{cur.remainData}}</li>
+                        <li>{{cur.remainData?cur.remainData.toFixed(2):'--'}}</li>
                         <li>{{cur.remainDays}}</li>
                         <li class="play">
                             <span @click="boxShow(1)">充值</span>
                             &nbsp;&nbsp;&nbsp;&nbsp;
                             <!-- <span>充值记录</span> -->
                         </li>
+                    </ul>
+                </div>
+                <div class="center" v-if="!dianList">
+                    <ul class="first">
+                        <li>仪表ID</li>
+                        <li>租户编号</li>
+                        <li>租户名称</li>
+                        <li>剩余金额</li>
+                        <li>剩余时间</li>
+                        <li>操作</li>
+                    </ul>
+                    <ul>
+                        <li>--</li>
+                        <li>--</li>
+                        <li>--</li>
+                        <li>--</li>
+                        <li>--</li>
+                        <li>--</li>
                     </ul>
                 </div>
                 <div class="btn" style="">
@@ -50,21 +68,21 @@
                 <h3>充 值</h3>
                 <div class="boxContent">
                     <P>
-                        仪表ID：<span> {{curParams.meterId}}</span>
+                        仪 表 I D：<span> {{curParams.meterId}}</span>
                     </P>
                     <P>
-                        剩余金额<span>  {{curParams.remainData?curParams.remainData:'--'}}元</span>
+                        剩余金额：<span>  {{curParams.remainData?curParams.remainData.toFixed(2):'--'}}元</span>
                     </P>
                     <P>
-                        用户ID：<span> {{curParams.tenantId}}</span>
+                        用 户 I D：<span> {{curParams.tenantId}}</span>
                     </P>
                     <span>充值金额：</span>
                     <InputNumber :max="99999" :min="1" :step="1" v-model="value2"></InputNumber> 元
                     <p>
-                        租户名称：<span>北京XXX有限公司</span>
+                        租户名称：<span>{{dataList.tenantName}}</span>
                     </p>
                     <p>
-                        能耗类型：<span>预付费</span>
+                        <!-- 能耗类型：<span>预付费</span> -->
                     </p>
                 </div>
                 <Button type="primary" id="payBtn" @click="Recharge">充 值</Button>
@@ -113,92 +131,7 @@ export default {
           key: "age"
         }
       ],
-      data1: [
-        {
-          name: "John Brown",
-          age: 18,
-          address: "New York No. 1 Lake Park",
-          date: "2016-10-03"
-        },
-        {
-          name: "Jim Green",
-          age: 24,
-          address: "London No. 1 Lake Park",
-          date: "2016-10-01"
-        },
-        {
-          name: "Joe Black",
-          age: 30,
-          address: "Sydney No. 1 Lake Park",
-          date: "2016-10-02"
-        },
-        {
-          name: "Jon Snow",
-          age: 26,
-          address: "Ottawa No. 2 Lake Park",
-          date: "2016-10-04"
-        },
-        {
-          name: "Joe Black",
-          age: 30,
-          address: "Sydney No. 1 Lake Park",
-          date: "2016-10-02"
-        },
-        {
-          name: "Joe Black",
-          age: 30,
-          address: "Sydney No. 1 Lake Park",
-          date: "2016-10-02"
-        },
-        {
-          name: "Joe Black",
-          age: 30,
-          address: "Sydney No. 1 Lake Park",
-          date: "2016-10-02"
-        },
-        {
-          name: "Joe Black",
-          age: 30,
-          address: "Sydney No. 1 Lake Park",
-          date: "2016-10-02"
-        },
-        {
-          name: "Joe Black",
-          age: 30,
-          address: "Sydney No. 1 Lake Park",
-          date: "2016-10-02"
-        },
-        {
-          name: "Joe Black",
-          age: 30,
-          address: "Sydney No. 1 Lake Park",
-          date: "2016-10-02"
-        },
-        {
-          name: "Joe Black",
-          age: 30,
-          address: "Sydney No. 1 Lake Park",
-          date: "2016-10-02"
-        },
-        {
-          name: "Joe Black",
-          age: 30,
-          address: "Sydney No. 1 Lake Park",
-          date: "2016-10-02"
-        },
-        {
-          name: "Joe Black",
-          age: 30,
-          address: "Sydney No. 1 Lake Park",
-          date: "2016-10-02"
-        },
-        {
-          name: "Joe Black",
-          age: 30,
-          address: "Sydney No. 1 Lake Park",
-          date: "2016-10-02"
-        },
-      ],
+      data1: [],
       tabHeight: "",
       dataList: '',
       pageIndex: 1,
@@ -274,6 +207,8 @@ export default {
               this.curParams.buildingName = res.data.content[0].buildingName;
               this.curParams.tenantId = this.dataList.tenantId,
               this.curParams.energyTypeId = this.dianList[0].energyTypeId;
+              console.log(this.curParams.tenantName,11);
+
             }else{
                 console.log(1111);
             }
@@ -327,7 +262,7 @@ export default {
             if(res.data.content[0]&&res.data.result=='success'){
               this.$Message.success('充值成功');
               this.boxShowF = 0;
-              this.value2 = '';
+              this.value2 = 0;
             }else{
                 this.$Message.failed('充值失败');
                 this.boxShowF = 0;
@@ -339,6 +274,8 @@ export default {
   },
   activated () {
     this.dataList = this.$route.query;
+    console.log(this.dataList);
+
     this.recordShow = 1;
     // console.log(this.$store.state.energyTypeId);
     this.findMeterId();

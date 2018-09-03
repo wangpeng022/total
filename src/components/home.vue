@@ -96,8 +96,9 @@ export default {
         },
         {
           title: "租户名称",
-          key: "tenantName"
-          // width: 150
+          key: "tenantName",
+          // width: 150,
+          sortable: true
         },
         {
           title: "租户全码",
@@ -123,7 +124,7 @@ export default {
           // width: 150,
           sortable: true,
           render:(h,params) => {
-            return h("div",params.row.remainData=='--'?'':params.row.remainData.toFixed(2)
+            return h("div",params.row.remainData=='--'?'--':params.row.remainData.toFixed(2)
             )
           }
         },
@@ -133,7 +134,7 @@ export default {
           // width: 150,
           sortable: true,
           render:(h,params) => {
-            return h("div",params.row.remainMoney=='--'?'':params.row.remainMoney.toFixed(2)
+            return h("div",params.row.remainMoney=='--'?'--':params.row.remainMoney.toFixed(2)
             )
           }
         },
@@ -319,7 +320,7 @@ export default {
           qs.stringify({ jsonString: JSON.stringify(params) })
         )
         .then(res => {
-          // console.log(res);
+          console.log(res);
           if (res.data.content[0] == "请先授权登录") {
             // return this.$router.push('login');
           }
