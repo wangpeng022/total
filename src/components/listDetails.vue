@@ -170,6 +170,7 @@ export default {
     },
     boxShow(flag) {
       this.boxShowF = flag;
+      this.value2 = 0;
       if (flag==1) {
         this.beforeMoney();
       }
@@ -218,7 +219,7 @@ export default {
     },
     // 充值前金额查询
     beforeMoney(){
-      console.log(this.dataList,111111111);
+      console.log(this.dataList,222222);
       var params = {
         meterId: this.dianList[0].meterId,
         buildingId: this.dataList.buildingId,
@@ -231,7 +232,8 @@ export default {
                 // return this.$router.push('login');
             }
             if(res.data.content[0]&&res.data.result){
-              this.curParams.remainData = res.data.content[0].remainData;
+              // this.curParams.remainData = res.data.content[0].remainData;
+              this.$set(this.curParams,'remainData',res.data.content[0].remainData);
               this.dianList[0].remainData = this.curParams.remainData;
             }else{
                 console.log(1111);

@@ -329,6 +329,7 @@ export default {
 
           } else {
             this.$Message.warning("获取数据失败");
+            this.data7 = [];
           }
           this.tableLoading = false;
         })
