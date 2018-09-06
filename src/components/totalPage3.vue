@@ -83,27 +83,51 @@ export default {
         },
         {
           title: "总能耗",
-          key: "amount"
+          key: "amount",
+          render:(h,params) => {
+            return h("div",params.row.amount=='--'?'--':params.row.amount.toFixed(2)
+            )
+          }
         },
         {
           title: "总能耗成本（元）",
-          key: "amountCost"
+          key: "amountCost",
+          render:(h,params) => {
+            return h("div",params.row.amountCost=='--'?'--':params.row.amountCost.toFixed(2)
+            )
+          }
         },
         {
           title: "总能耗收入（元）",
-          key: "money"
+          key: "money",
+          render:(h,params) => {
+            return h("div",params.row.money=='--'?'--':params.row.money.toFixed(2)
+            )
+          }
         },
          {
           title: "总能耗溢价（元）",
-          key: "premiumMoney"
+          key: "premiumMoney",
+          render:(h,params) => {
+            return h("div",params.row.premiumMoney=='--'?'--':params.row.premiumMoney.toFixed(2)
+            )
+          }
         },
         {
           title: "充值总金额(元)",
-          key: "prepayMoney"
+          key: "prepayMoney",
+          render:(h,params) => {
+            return h("div",params.row.prepayMoney=='--'?'--':params.row.prepayMoney.toFixed(2)
+            )
+          }
         },
         {
           title: "剩余总金额（元）",
-          key: "remainMoney"
+          key: "remainMoney",
+          render:(h,params) => {
+            return h("div",params.row.remainMoney=='--'?'--':params.row.remainMoney.toFixed(2)
+            )
+          }
         },
 
       ],
@@ -356,7 +380,10 @@ export default {
 .ivu-table .table-sum-row td{
   /* font-size: 14px; */
   font-weight: 600;
-  background-color: #ececec;
+  background-color: #ececec93;
+}
+.ivu-table .table-sum-row:hover{
+  background-color: #EBF7FF;
 }
 .ivu-table .table-sum2-row td{
   /* font-size: 14px; */

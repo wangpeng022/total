@@ -25,7 +25,7 @@
         </Select>
           &nbsp;
           <Button @click="getData">查询</Button>
-          <Input icon="ios-search" style="width:250px;float:right" v-model="valueRight" placeholder="请输入租户名称或编号" @on-keyup='rightSearch' @on-blur="valueRight=''"></Input>
+          <Input icon="ios-search" style="width:250px;float:right" v-model="valueRight" placeholder="请输入租户名称" @on-keyup='rightSearch' @on-blur="valueRight=''"></Input>
           <div class="rightSearchDown" v-show="valueRight">
             <ul>
               <li v-for="(item,index) in dataListSearch" :key="index" @mousedown="rightClickItem">{{item}}</li>
