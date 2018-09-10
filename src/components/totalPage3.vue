@@ -48,7 +48,7 @@
     <br/>
     <Row ref="total">
       <Col span="2">汇总：</Col>
-      <Col span="4" v-text="amountCost+'元'"></Col>
+      <Col span="4" v-text="amountCost?amountCost.toFixed(2)+' 元':0+' 元'"></Col>
     </Row>
     <br/>
     <Table  ref="table" :height="tabHeight" :columns="columns1" :row-class-name="rowClassName" :data="data1"></Table>
@@ -82,7 +82,7 @@ export default {
           key: "name"
         },
         {
-          title: "总能耗",
+          title: "总能耗（KWH）",
           key: "amount",
           render:(h,params) => {
             return h("div",params.row.amount=='--'?'--':params.row.amount.toFixed(2)

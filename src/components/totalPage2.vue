@@ -54,7 +54,7 @@
     <br/>
     <Row ref="total">
       <Col span="2">汇总：</Col>
-      <Col span="4" v-text="sumMoney+'元'"></Col>
+      <Col span="4" v-text="sumMoney?sumMoney.toFixed(2)+' 元':0+' 元'"></Col>
     </Row>
     <br/>
     <Table ref="table" :height="tabHeight" :columns="columns1" :data="data1"></Table>

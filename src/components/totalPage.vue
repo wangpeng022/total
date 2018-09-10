@@ -54,18 +54,18 @@
     <br/>
     <Row ref="total">
       <Col span="2">汇总：</Col>
-      <Col span="3" v-text="sumMoney?sumMoney.toFixed(2):0+'元'"></Col>
+      <Col span="3" v-text="sumMoney?sumMoney.toFixed(2)+' 元':0+' 元'"></Col>
       <Col span="2">微信汇总：</Col>
       <Col span="3">
-        <span v-text="wxMoney?wxMoney.toFixed(2):0+'元'"></span>
+        <span v-text="wxMoney?wxMoney.toFixed(2)+' 元':0+' 元'"></span>
         &nbsp;
-        <span v-text="wxCount+'笔'"></span>
+        <span v-text="wxCount+' 笔'"></span>
       </Col>
       <Col span="2">PC充值汇总：</Col>
       <Col span="3">
-        <span v-text="pcMoney?pcMoney.toFixed(2):0+'元'"></span>
+        <span v-text="pcMoney?pcMoney.toFixed(2)+' 元':0+' 元'"></span>
         &nbsp;
-        <span v-text="pcCount+'笔'"></span>
+        <span v-text="pcCount+' 笔'"></span>
       </Col>
 
     </Row>
@@ -393,7 +393,7 @@ export default {
   },
   mounted() {
     this.sessionId = this.getCookie('admin');
-    console.log(this.sessionId);
+    // console.log(this.sessionId);
     let bigHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 120;
     this.tabHeight = bigHeight;
   }

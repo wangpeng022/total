@@ -381,7 +381,7 @@ export default {
     this.getEnergyType();
     var bigHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 120;
     this.tabHeight = bigHeight;
-    // document.body.addEventListener('click', this.searchBurHide, false)
+    document.body.addEventListener('click', this.searchBurHide, false)
 
   }
 };
